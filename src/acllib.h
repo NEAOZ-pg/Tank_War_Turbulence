@@ -136,7 +136,7 @@ extern "C" {
 	int Setup(void);
 
 	// 
-	void initWindow(const char title[], int left, int top, int width, int height);
+	void initWindow(const char* wndName, int x, int y, int width, int height);
 	void msgBox(const char title[], const char text[], int flag);
 
 	void registerKeyboardEvent(KeyboardEventCallback callback);
@@ -149,8 +149,8 @@ extern "C" {
 
 	// Sound
 	void loadSound(const char *fileName, ACL_Sound *pSound);
-	void playSound(ACL_Sound soundID, int repeat);
-	void stopSound(ACL_Sound soundID);
+	void playSound(int sid, int repeat);
+	void stopSound(int sid);
 
 	// Paint
 	void beginPaint();

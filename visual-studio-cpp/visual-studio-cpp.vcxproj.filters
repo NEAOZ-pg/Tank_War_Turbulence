@@ -30,6 +30,9 @@
     <ClCompile Include="wall_map.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="tank.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\acllib.h">
@@ -39,6 +42,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="wall_map.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tank.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
