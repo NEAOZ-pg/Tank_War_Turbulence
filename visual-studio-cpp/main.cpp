@@ -14,6 +14,12 @@ int map2[3][4][4] = {
 	{{0,1,1,0},{1,1,0,0},{0,1,0,0},{0,1,0,1},},
 };
 
+/*
+添加新的地图
+
+*/
+
+
 int*** testmap;
 
 void map_init(int length,int width)
@@ -29,6 +35,7 @@ void map_init(int length,int width)
 			for (i = 0; i < 4; i++)
 			{
 				testmap[line][column][i] = map2[line][column][i];
+				//更改map2为map1即可获得map1的地图
 			}
 		}
 	}
@@ -40,6 +47,7 @@ int Setup()
 
 	beginPaint();
 
+	//修改map_init & testmap的前两个参数与map1 | 2 的长宽对应
 	map_init(4,3);
 
 	WallMap testmap(4, 3, testmap);
