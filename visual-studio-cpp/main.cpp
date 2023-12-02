@@ -63,6 +63,8 @@ int Setup()
 	Tank tank1(1, GREEN, random_coordinate(testmap), 30, 25, 15, 3);
 	tank1.tank_show(BLUE);
 
+	//something error with banch
+
 	endPaint();
 
 	return 0;
