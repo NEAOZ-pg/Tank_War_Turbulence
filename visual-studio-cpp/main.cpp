@@ -62,6 +62,8 @@ int Setup()
 	Tank tank1(1, random_coordinate(testmap), 0, 15, 10, 3);
 	tank1.tank_show(testmap, BLUE);
 
+	//something error with banch
+
 	endPaint();
 
 	//merge
