@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <time.h>
+#include <iostream>
 #include "acllib.h"
 #include "wall_map.h"
 #include "tank.h"
@@ -47,8 +48,8 @@ int Setup()
 {
 	initWindow("Test", 200, 50, 1300, 800);
 	srand((unsigned int)time(0));
-	//initConsole();
-
+	// initConsole();
+	
 	beginPaint();
 
 	//修改map_init & testmap的前两个参数与map1 | 2 的长宽对应
@@ -56,11 +57,11 @@ int Setup()
 	WallMap testmap(4, 3, testmap);
 	testmap.wallmap_show();
 
-	Tank tank0(0, random_coordinate(testmap), 0, 15, 10, 3);
-	tank0.tank_show(testmap,GREEN);
+	Tank tank0(0, GREEN, random_coordinate(testmap), 50, 25, 15, 3);
+	tank0.tank_show(GREEN);
 
-	Tank tank1(1, random_coordinate(testmap), 0, 15, 10, 3);
-	tank1.tank_show(testmap, BLUE);
+	Tank tank1(1, GREEN, random_coordinate(testmap), 30, 25, 15, 3);
+	tank1.tank_show(BLUE);
 
 	endPaint();
 

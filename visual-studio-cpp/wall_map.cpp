@@ -134,7 +134,6 @@ void WallMap::_wallmap_showframe()
 		_axis_x + UNIT_LENGTH * _length + UNIT_LINE, _axis_y + UNIT_LENGTH * _width + UNIT_LINE);
 }
 
-
 //public
 int WallMap::get_axis_x()
 {
@@ -156,95 +155,6 @@ int WallMap::get_width()
 	return _width;
 }
 
-/**
-  * @brief  计算出在相邻九宫格的相对坐标（左上角为原点）
-  * @param  center[2] ： Wall_Map坐标系的坐标
-  * @retval new_center[2] : 在相邻九宫格的相对坐标
-  */
-int* WallMap::get_rela_quare_nine_center(int* center)
-{
-	int new_center[2];
-
-	new_center[0] = center[0] % UNIT_LENGTH;
-	new_center[1] = center[1] % UNIT_LENGTH;
-
-	return new_center;
-}
-
-/**
-  * @brief  计算相邻九宫格的墙壁具体情况
-  * @param  center[2] ： 总坐标系的坐标
-  * @retval nine_map[3 * UNIT_LENGTH][3 * UNIT_LENGTH] 
-  *					1 : 有障碍		0 ：无障碍
-  */
-int** WallMap::get_square_nine(int* center)
-{
-	const int move[3][3][2] = 
-	{
-		{ {-1,-1}, {-1,0}, {-1,1},},
-		{ {0,-1}, {0,0}, {0,1},},
-		{ {1,-1}, {1,0}, {1,1},},
-	};
-	int new_center[2] = { center[0] / UNIT_LENGTH,center[1] / UNIT_LENGTH };
-	
-	int **nine_map;
-	int i = 0, j = 0;
-
-	nine_map = (int**)malloc(sizeof(int*) * UNIT_LENGTH);
-	for (i = 0; i < 3 * UNIT_LENGTH; i++)
-	{
-		nine_map[i] = (int*)malloc(sizeof(int) * UNIT_LENGTH);
-		for (j = 0; j < 3 * UNIT_LENGTH; j++)
-			nine_map[i][j] = 0;
-	}
-	
-	for(i = 0;i < 3;i++)
-		for (j = 0; j < 3; j++)
-		{
-			//i 为 line，j 为 column，
-			//先给 y（line）,再给 x （column） 按照行读取
-			int* frontier = _get_frontier(center[1] + move[i][j][1], center[0] + move[i][j][0]);
-			int x = j * UNIT_LENGTH, y = i * UNIT_LENGTH;
-			int m = 0, n = 0;
-			if (frontier[0])
-			{
-				for (m = x; m < x + UNIT_LENGTH; m++)
-					for (n = y; n < y + UNIT_LINE; n++)
-						nine_map[m][n] = 1;
-			}
-			if (frontier[1])
-			{
-				for (m = x; m < x + UNIT_LENGTH; m++)
-					for (n = y + UNIT_LENGTH - UNIT_LINE; n < y + UNIT_LENGTH; n++)
-						nine_map[m][n] = 1;
-			}
-			if (frontier[2])
-			{
-				for (m = x; m < x + UNIT_LINE; m++)
-					for (n = y; n < y + UNIT_LENGTH; n++)
-						nine_map[m][n] = 1;
-			}
-			if (frontier[3])
-			{
-				for (m = x + UNIT_LENGTH - UNIT_LINE; m < x + UNIT_LENGTH; m++)
-					for (n = y; n < y + UNIT_LENGTH; n++)
-						nine_map[m][n] = 1;
-			}
-		}
-
-	return nine_map;
-}
-
-void WallMap::free_square_nine(int** nine_map)
-{
-	int i = 0, j = 0;
-	for (i = 0; i < 3 * UNIT_LENGTH; i++)
-	{
-		free(nine_map[i]);
-	}
-	free(nine_map);
-	nine_map = NULL;
-}
 /**
   * @brief  绘制Map
   * @param  None
