@@ -22,8 +22,10 @@ private:
 	void _wallmap_showframe();
 
 public:
+	WallMap();
 	WallMap(int length, int width, int*** map);
 	WallMap(const WallMap& w);
+	WallMap &operator=(const WallMap& map1);
 	~WallMap();
 
 	int get_axis_x();

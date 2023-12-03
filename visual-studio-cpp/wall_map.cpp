@@ -5,6 +5,11 @@
 #include <cstring>
 #include "acllib.h"
 
+WallMap::WallMap()
+{
+	wallmap = NULL;
+}
+
 WallMap::WallMap(int length, int width, int*** map) :
 	_length(length), _width(width)
 {
@@ -51,6 +56,31 @@ WallMap::WallMap(const WallMap& w)
 		}
 	}
 
+}
+
+WallMap& WallMap::operator=(const WallMap& map1)
+{
+	this->_length = map1._length;
+	this->_width = map1._width;
+	this->_axis_x = map1._axis_x;
+	this->_axis_y = map1._axis_y;
+
+	this->wallmap = new int** [_width];
+	int line = 0, column = 0, i = 0;
+	for (line = 0; line < _width; line++)
+	{
+		this->wallmap[line] = new int* [_length];
+		for (column = 0; column < _length; column++)
+		{
+			this->wallmap[line][column] = new int[4];
+			for (i = 0; i < 4; i++)
+			{
+				this->wallmap[line][column][i] = map1.wallmap[line][column][i];
+			}
+		}
+	}
+	return *this;
+	// TODO: insert return statement here
 }
 
 WallMap::~WallMap()

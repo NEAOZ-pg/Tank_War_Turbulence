@@ -26,10 +26,10 @@ void Tank::tank_unshow()
 	polygon(_points_symmetric(_point_coordinates()), 4);
 }
 
-void Tank::tank_show(ACL_Color color)
+void Tank::tank_show()
 {
 	setPenColor(EMPTY);
-	setBrushColor(color);
+	setBrushColor(_color);
 	setBrushStyle(BRUSH_STYLE_SOLID);
 	POINTS points[4];
 	polygon(_points_symmetric(_point_coordinates()), 4);

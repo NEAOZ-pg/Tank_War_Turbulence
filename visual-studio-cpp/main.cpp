@@ -5,6 +5,11 @@
 #include "wall_map.h"
 #include "tank.h"
 
+#define interface_game_init 0
+#define interface_game_play 1
+
+#define TimeID_Game 0
+
 //UP DOWN LEFT RIGHT
 int map1[3][3][4] = {
 	{{1,1,1,0},{1,0,0,1},{1,0,1,1},},
@@ -24,7 +29,6 @@ int map2[3][4][4] = {
 */
 
 int*** testmap;
-
 void map_init(int length,int width)
 {
 	testmap = (int***)malloc(sizeof(int**) * width);
@@ -44,28 +48,146 @@ void map_init(int length,int width)
 	}
 }
 
-int Setup()
+void keyevent(int key, int event);
+void timeevent(int timeID);
+int key_A = 0;
+int key_W = 0;
+int key_S = 0;
+int key_D = 0;
+
+int interface_state = 0;
+
+int center_init[2] = { 50,50 };
+Tank tank0(1, BLUE, center_init, 30, 25, 15, 3);
+WallMap map_test;
+
+int Setup()		//
 {
-	initWindow("Test", 200, 50, 1300, 800);
 	srand((unsigned int)time(0));
-	// initConsole();
-	
+	initWindow("Test", 200, 50, 1300, 800);
+	initConsole();
+	registerKeyboardEvent(keyevent);
+	registerTimerEvent(timeevent);
+	startTimer(0, 20);
 	beginPaint();
 
-	//修改map_init & testmap的前两个参数与map1 | 2 的长宽对应
-	map_init(4,3);
-	WallMap testmap(4, 3, testmap);
-	testmap.wallmap_show();
 
-	Tank tank0(0, GREEN, random_coordinate(testmap), 50, 25, 15, 3);
-	tank0.tank_show(GREEN);
-
-	Tank tank1(1, GREEN, random_coordinate(testmap), 30, 25, 15, 3);
-	tank1.tank_show(BLUE);
-
-	//something error with banch
+	/*Tank tank1(1, BLUE, random_coordinate(testmap), 30, 25, 15, 3);
+	tank1.tank_show();
+	tank1.tank_unshow();*/
 
 	endPaint();
 
+		//if (key_A)
+		//{
+		//	std::cout << "A\n";
+		//	key_A = 0;
+		//}
+
+
 	return 0;
+}
+
+int main()
+{
+	while (1) {
+		std::cout << "OK!\n";
+	}
+}
+
+void keyevent(int key, int event)
+{
+	if (event == KEY_DOWN)
+	{
+		if (key == 0x41)
+		{
+			std::cout << "A = 1\n";
+			key_A = 1;
+		}
+		else if (key == 0x57)
+		{
+			std::cout << "W = 1\n";
+			key_W = 1;
+		}
+		else if (key == 0x53)
+		{
+			std::cout << "S = 1\n";
+			key_S = 1;
+		}
+		else if (key == 0x44)
+		{
+			std::cout << "D = 1\n";
+			key_D = 1;
+		}
+	}
+	else if (event == KEY_UP)
+	{
+		if (key == 0x41)
+		{
+			std::cout << "A = 0\n";
+			key_A = 0;
+		}
+		else if (key == 0x57)
+		{
+			std::cout << "W = 0\n";
+			key_W = 0;
+		}
+		else if (key == 0x53)
+		{
+			std::cout << "S = 0\n";
+			key_S = 0;
+		}
+		else if (key == 0x44)
+		{
+			std::cout << "D = 0\n";
+			key_D = 0;
+		}
+	}
+}
+
+void timeevent(int timeID)
+{
+	if (timeID == TimeID_Game)
+	{
+		if (interface_state == interface_game_init)
+		{
+			beginPaint();
+
+			map_init(4, 3);
+			WallMap map_i(4, 3, testmap);
+			map_test = map_i;
+			map_test.wallmap_show();
+
+			Tank tank(0, GREEN, random_coordinate(map_test), 50, 25, 15, 3);
+			tank0 = tank;
+			tank0.tank_show();
+
+			endPaint();
+
+			interface_state = 1;
+		}
+		else if (interface_state == interface_game_play)
+		{
+			if (key_A)
+			{
+				beginPaint();
+				
+				tank0.tank_unshow();
+				tank0.rotate_CCW_per_time();
+				tank0.tank_show();
+
+				endPaint();
+			}
+			if (key_D)
+			{
+				beginPaint();
+
+				tank0.tank_unshow();
+				tank0.rotate_CW_per_time();
+				tank0.tank_show();
+
+				endPaint();
+			}
+		}
+	}
 }

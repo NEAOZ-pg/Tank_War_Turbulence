@@ -86,9 +86,15 @@ void SolidObject::move_per_time()
 	_center[1] += (int)(sin(_angle) * 3);
 }
 
-void SolidObject::rotate_per_time()
+void SolidObject::rotate_CW_per_time()
 {
-	_angle = (_angle + 3) / 360;
+	_angle = (_angle + 3) % 360;
+	//ÅÐ¶Ï£¡
+}
+
+void SolidObject::rotate_CCW_per_time()
+{
+	_angle = (_angle - 3) % 360;
 	//ÅÐ¶Ï£¡
 }
 

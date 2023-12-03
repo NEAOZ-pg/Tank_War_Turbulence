@@ -28,8 +28,8 @@ public:
 	//int judge_edge(int* new_center,WallMap my_map);
 
 	void move_per_time();
-	void rotate_per_time();
-
+	void rotate_CW_per_time();
+	void rotate_CCW_per_time();
 };
 
 #endif

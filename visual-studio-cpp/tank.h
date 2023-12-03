@@ -16,7 +16,7 @@ public:
 	~Tank();
 
 	void tank_unshow();
-	void tank_show(ACL_Color color);
+	void tank_show();
 };
 
 int* random_coordinate(WallMap my_map);
