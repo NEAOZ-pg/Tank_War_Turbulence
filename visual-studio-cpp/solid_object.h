@@ -18,7 +18,7 @@ protected:
 	int _speed;
 
 	POINT _point_coordinates();
-	POINT* _points_symmetric(POINT point);
+	void _points_symmetric(POINT* points, POINT point);
 	
 public:
 	SolidObject(int user, ACL_Color color, int center[], int angle, int half_length, int half_width, int speed);
@@ -27,7 +27,8 @@ public:
 
 	//int judge_edge(int* new_center,WallMap my_map);
 
-	void move_per_time();
+	void move_for_per_time();
+	void move_back_per_time();
 	void rotate_CW_per_time();
 	void rotate_CCW_per_time();
 };

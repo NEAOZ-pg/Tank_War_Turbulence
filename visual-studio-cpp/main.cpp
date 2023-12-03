@@ -188,6 +188,26 @@ void timeevent(int timeID)
 
 				endPaint();
 			}
+			if (key_W)
+			{
+				beginPaint();
+
+				tank0.tank_unshow();
+				tank0.move_for_per_time();
+				tank0.tank_show();
+
+				endPaint();
+			}
+			if (key_S)
+			{
+				beginPaint();
+
+				tank0.tank_unshow();
+				tank0.move_back_per_time();
+				tank0.tank_show();
+
+				endPaint();
+			}
 		}
 	}
 }

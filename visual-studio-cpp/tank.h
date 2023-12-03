@@ -10,7 +10,7 @@
 class Tank:public SolidObject
 {
 private:
-
+	POINT* _points_cannon(POINT* points);
 public:
 	Tank(int user, ACL_Color color, int* center, int angle, int length, int width, int speed);
 	~Tank();

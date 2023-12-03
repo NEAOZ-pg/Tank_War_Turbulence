@@ -55,6 +55,10 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>C:\Users\25836\Desktop\tank_war\visual-studio-cpp;C:\Users\25836\Desktop\tank_war\visual-studio-cpp\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <ConformanceMode>Default</ConformanceMode>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -71,6 +75,10 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <ConformanceMode>Default</ConformanceMode>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

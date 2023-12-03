@@ -1,10 +1,13 @@
 #include <Windows.h>
 #include <math.h>
+#include <iostream>
 #include "solid_object.h"
 #include "wall_map.h"
 #include "acllib.h"
 
 #define PI 3.14
+#define ANGULAR_V 10
+#define LINEAR_V 10
 
 SolidObject::SolidObject(int user, ACL_Color color, int center[], 
 	int angle, int half_length, int half_width, int speed) :
@@ -42,10 +45,8 @@ POINT SolidObject::_point_coordinates()
   * @param  右方上角的点坐标
   * @retval	points[4]{x,y} 在画布坐标系下的四角坐标
   */
-POINT* SolidObject::_points_symmetric(POINT point)
+void SolidObject::_points_symmetric(POINT *points, POINT point)
 {
-	POINT points[4];
-
 	points[0].x = point.x;
 	points[0].y = point.y;
 	points[1].x = (long)(point.x - 2 * _half_length * cos(_angle * PI / 180));
@@ -54,10 +55,7 @@ POINT* SolidObject::_points_symmetric(POINT point)
 	points[2].y = 2 * _center[1] - points[0].y;
 	points[3].x = 2 * _center[0] - points[1].x;
 	points[3].y = 2 * _center[1] - points[1].y;
-
-	return points;
 }
-
 
 /*
 int SolidObject::judge_edge(int* new_center, WallMap my_map)
@@ -80,21 +78,30 @@ int SolidObject::judge_edge(int* new_center, WallMap my_map)
 	return 0;
 }
 */
-void SolidObject::move_per_time()
+void SolidObject::move_for_per_time()
 {
-	_center[0] += (int)(cos(_angle) * 3);
-	_center[1] += (int)(sin(_angle) * 3);
+	_center[0] += (int)(cos(_angle * PI / 180) * LINEAR_V);
+	_center[1] += (int)(sin(_angle * PI / 180) * LINEAR_V);
+	std::cout << _angle << '\n';
+	std::cout << cos(_angle) << '\n';
+	std::cout << sin(_angle) << '\n';
+}
+
+void SolidObject::move_back_per_time()
+{
+	_center[0] -= (int)(cos(_angle * PI / 180) * LINEAR_V);
+	_center[1] -= (int)(sin(_angle * PI / 180) * LINEAR_V);
 }
 
 void SolidObject::rotate_CW_per_time()
 {
-	_angle = (_angle + 3) % 360;
+	_angle = (_angle + ANGULAR_V) % 360;
 	//判断！
 }
 
 void SolidObject::rotate_CCW_per_time()
 {
-	_angle = (_angle - 3) % 360;
+	_angle = (_angle - ANGULAR_V) % 360;
 	//判断！
 }
 
