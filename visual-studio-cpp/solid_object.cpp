@@ -45,8 +45,9 @@ POINT SolidObject::_point_coordinates()
   * @param  右方上角的点坐标
   * @retval	points[4]{x,y} 在画布坐标系下的四角坐标
   */
-void SolidObject::_points_symmetric(POINT *points, POINT point)
+void SolidObject::_points_symmetric(POINT *points)
 {
+	POINT point = _point_coordinates();
 	points[0].x = point.x;
 	points[0].y = point.y;
 	points[1].x = (long)(point.x - 2 * _half_length * cos(_angle * PI / 180));
@@ -57,27 +58,40 @@ void SolidObject::_points_symmetric(POINT *points, POINT point)
 	points[3].y = 2 * _center[1] - points[1].y;
 }
 
-/*
-int SolidObject::judge_edge(int* new_center, WallMap my_map)
+int SolidObject::_judge_crash(int* new_center)
 {
-	//判断边界
-	
-	可以使用的变量：
-	int new_center[2]	//相对于整张大图，即280 * 210，左上角为原点（0，0）
-	int angle, int half_length, int half_width
+	POINT points[4];
+	_points_symmetric((points));
 
-	my_map.pixel_check(int x, int y) == white 即为此像素块不是边界（非白色可能是其他的子弹或者坦克，
-																暂时不考虑，这个函数只对边界判断）
-	可以判断边界的某个点是否是边界的条件
+
+	//判断除了撞上子弹的一切。
+	/*
+	可以使用的变量：
+	int new_center[2]	//相对window窗口，即在windowinit（）创建的窗口左上角为原点（0，0）
+	int angle, int half_length, int half_width（可能用不到）
+
+	上面的两句，获得的points 结构体长这样
+	typedef struct tagPOINT
+	{
+		LONG  x;
+		LONG  y;
+	} POINT,
+	存四个角的x和y。
+	顺序（当坦克朝向右边的时候）：按照逆时针：右上角，左上角，左下角，右下角。
+
+	ACL_Color getPixel(int x, int y);（函数原型在acclib.h中
+	返回颜色，只要不是白色（什么都没有）和（GREY：子弹）都算是碰到边界
+											（子弹暂时不考虑）
 
 	返回值，0：不是边界，1，边界在上面撞到，2，边界在下面撞到
 					3，边界在左面撞到，4，边界在下面撞到
-
-	
+	*/
 
 	return 0;
 }
-*/
+
+//public
+
 void SolidObject::move_for_per_time()
 {
 	_center[0] += (int)(cos(_angle * PI / 180) * LINEAR_V);

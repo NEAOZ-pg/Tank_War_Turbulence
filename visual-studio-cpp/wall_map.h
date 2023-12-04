@@ -4,6 +4,9 @@
 #include <Windows.h>
 #include "acllib.h"
 
+#define WINDOW_LENGTH 1300
+#define WINDOW_WIDTH 800
+
 #define UNIT_LENGTH 120
 #define UNIT_LINE 8
 

@@ -18,14 +18,12 @@ protected:
 	int _speed;
 
 	POINT _point_coordinates();
-	void _points_symmetric(POINT* points, POINT point);
-	
+	void _points_symmetric(POINT* points);
+	int _judge_crash(int* new_center);
+
 public:
 	SolidObject(int user, ACL_Color color, int center[], int angle, int half_length, int half_width, int speed);
 	~SolidObject();
-
-
-	//int judge_edge(int* new_center,WallMap my_map);
 
 	void move_for_per_time();
 	void move_back_per_time();

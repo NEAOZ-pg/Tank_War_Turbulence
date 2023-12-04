@@ -7,15 +7,18 @@
 
 WallMap::WallMap()
 {
+	_axis_x = 0;
+	_axis_y = 0;
+	_length = 0;
+	_width = 0;
 	wallmap = NULL;
 }
 
 WallMap::WallMap(int length, int width, int*** map) :
 	_length(length), _width(width)
 {
-	//后期需要更复杂的算法让map居中
-	_axis_x = 100;
-	_axis_y = 100;
+	_axis_x = (WINDOW_LENGTH - _length * UNIT_LENGTH) / 2;
+	_axis_y = 100;//可能需要改变
 
 	wallmap = new int** [_width];
 	int line = 0, column = 0, i = 0;

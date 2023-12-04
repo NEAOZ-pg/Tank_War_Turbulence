@@ -64,7 +64,7 @@ WallMap map_test;
 int Setup()		//
 {
 	srand((unsigned int)time(0));
-	initWindow("Test", 200, 50, 1300, 800);
+	initWindow("Test", 200, 50, WINDOW_LENGTH, WINDOW_WIDTH);
 	initConsole();
 	registerKeyboardEvent(keyevent);
 	registerTimerEvent(timeevent);
@@ -164,7 +164,7 @@ void timeevent(int timeID)
 
 			endPaint();
 
-			interface_state = 1;
+			interface_state = interface_game_play;
 		}
 		else if (interface_state == interface_game_play)
 		{
