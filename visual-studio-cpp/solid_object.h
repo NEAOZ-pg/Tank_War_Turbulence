@@ -22,6 +22,7 @@ protected:
 	int _judge_crash(int* new_center);
 
 public:
+	SolidObject();
 	SolidObject(int user, ACL_Color color, int center[], int angle, int half_length, int half_width, int speed);
 	~SolidObject();
 

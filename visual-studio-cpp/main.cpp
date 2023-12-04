@@ -1,6 +1,8 @@
 #include <windows.h>
 #include <time.h>
 #include <iostream>
+#include "global_param.h"
+#include "key_interrupt.h"
 #include "acllib.h"
 #include "wall_map.h"
 #include "tank.h"
@@ -48,18 +50,13 @@ void map_init(int length,int width)
 	}
 }
 
-void keyevent(int key, int event);
 void timeevent(int timeID);
-int key_A = 0;
-int key_W = 0;
-int key_S = 0;
-int key_D = 0;
 
 int interface_state = 0;
-
-int center_init[2] = { 50,50 };
-Tank tank0(1, BLUE, center_init, 30, 25, 15, 3);
 WallMap map_test;
+Tank tank1;
+Tank tank2;
+
 
 int Setup()		//
 {
@@ -69,80 +66,8 @@ int Setup()		//
 	registerKeyboardEvent(keyevent);
 	registerTimerEvent(timeevent);
 	startTimer(0, 20);
-	beginPaint();
-
-
-	/*Tank tank1(1, BLUE, random_coordinate(testmap), 30, 25, 15, 3);
-	tank1.tank_show();
-	tank1.tank_unshow();*/
-
-	endPaint();
-
-		//if (key_A)
-		//{
-		//	std::cout << "A\n";
-		//	key_A = 0;
-		//}
-
 
 	return 0;
-}
-
-int main()
-{
-	while (1) {
-		std::cout << "OK!\n";
-	}
-}
-
-void keyevent(int key, int event)
-{
-	if (event == KEY_DOWN)
-	{
-		if (key == 0x41)
-		{
-			std::cout << "A = 1\n";
-			key_A = 1;
-		}
-		else if (key == 0x57)
-		{
-			std::cout << "W = 1\n";
-			key_W = 1;
-		}
-		else if (key == 0x53)
-		{
-			std::cout << "S = 1\n";
-			key_S = 1;
-		}
-		else if (key == 0x44)
-		{
-			std::cout << "D = 1\n";
-			key_D = 1;
-		}
-	}
-	else if (event == KEY_UP)
-	{
-		if (key == 0x41)
-		{
-			std::cout << "A = 0\n";
-			key_A = 0;
-		}
-		else if (key == 0x57)
-		{
-			std::cout << "W = 0\n";
-			key_W = 0;
-		}
-		else if (key == 0x53)
-		{
-			std::cout << "S = 0\n";
-			key_S = 0;
-		}
-		else if (key == 0x44)
-		{
-			std::cout << "D = 0\n";
-			key_D = 0;
-		}
-	}
 }
 
 void timeevent(int timeID)
@@ -158,9 +83,13 @@ void timeevent(int timeID)
 			map_test = map_i;
 			map_test.wallmap_show();
 
-			Tank tank(0, GREEN, random_coordinate(map_test), 50, 25, 15, 3);
-			tank0 = tank;
-			tank0.tank_show();
+			Tank tank_1(1, GREEN, random_coordinate(map_test), random_angle(), 25, 15, 3);
+			tank1 = tank_1;
+			tank1.tank_show();
+
+			Tank tank_2(2, BLUE, random_coordinate(map_test), random_angle(), 25, 15, 3);
+			tank2 = tank_2;
+			tank2.tank_show();
 
 			endPaint();
 
@@ -172,9 +101,9 @@ void timeevent(int timeID)
 			{
 				beginPaint();
 				
-				tank0.tank_unshow();
-				tank0.rotate_CCW_per_time();
-				tank0.tank_show();
+				tank1.tank_unshow();
+				tank1.rotate_CCW_per_time();
+				tank1.tank_show();
 
 				endPaint();
 			}
@@ -182,9 +111,9 @@ void timeevent(int timeID)
 			{
 				beginPaint();
 
-				tank0.tank_unshow();
-				tank0.rotate_CW_per_time();
-				tank0.tank_show();
+				tank1.tank_unshow();
+				tank1.rotate_CW_per_time();
+				tank1.tank_show();
 
 				endPaint();
 			}
@@ -192,9 +121,9 @@ void timeevent(int timeID)
 			{
 				beginPaint();
 
-				tank0.tank_unshow();
-				tank0.move_for_per_time();
-				tank0.tank_show();
+				tank1.tank_unshow();
+				tank1.move_for_per_time();
+				tank1.tank_show();
 
 				endPaint();
 			}
@@ -202,11 +131,59 @@ void timeevent(int timeID)
 			{
 				beginPaint();
 
-				tank0.tank_unshow();
-				tank0.move_back_per_time();
-				tank0.tank_show();
+				tank1.tank_unshow();
+				tank1.move_back_per_time();
+				tank1.tank_show();
 
 				endPaint();
+			}
+			if (key_SPACE)
+			{
+				//tank1 bullet
+			}
+			if (key_LEFT)
+			{
+				beginPaint();
+
+				tank2.tank_unshow();
+				tank2.rotate_CCW_per_time();
+				tank2.tank_show();
+
+				endPaint();
+			}
+			if (key_RIGHT)
+			{
+				beginPaint();
+
+				tank2.tank_unshow();
+				tank2.rotate_CW_per_time();
+				tank2.tank_show();
+
+				endPaint();
+			}
+			if (key_UP)
+			{
+				beginPaint();
+
+				tank2.tank_unshow();
+				tank2.move_for_per_time();
+				tank2.tank_show();
+
+				endPaint();
+			}
+			if (key_DOWN)
+			{
+				beginPaint();
+
+				tank2.tank_unshow();
+				tank2.move_back_per_time();
+				tank2.tank_show();
+
+				endPaint();
+			}
+			if (key_ENTER)
+			{
+				//tank2 bullet
 			}
 		}
 	}

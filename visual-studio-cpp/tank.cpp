@@ -6,6 +6,10 @@
 #include "acllib.h"
 #include "wall_map.h"
 
+Tank::Tank()
+{
+}
+
 Tank::Tank(int user, ACL_Color color, int* center, int angle, int half_length, int half_width, int speed) :
 	SolidObject(user, color, center, angle, half_length, half_width, speed)
 {
@@ -68,4 +72,9 @@ int* random_coordinate(WallMap my_map)
 	}while(getPixel(random_c[0],random_c[1]) != WHITE);
 
 	return random_c;
+}
+
+int random_angle()
+{
+	return rand() % 360;
 }

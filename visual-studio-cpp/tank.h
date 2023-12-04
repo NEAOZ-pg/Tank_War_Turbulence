@@ -12,6 +12,7 @@ class Tank:public SolidObject
 private:
 	POINT* _points_cannon(POINT* points);
 public:
+	Tank();
 	Tank(int user, ACL_Color color, int* center, int angle, int length, int width, int speed);
 	~Tank();
 
@@ -20,5 +21,6 @@ public:
 };
 
 int* random_coordinate(WallMap my_map);
+int random_angle();
 
 #endif

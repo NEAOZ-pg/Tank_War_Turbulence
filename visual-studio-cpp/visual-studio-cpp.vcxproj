@@ -89,6 +89,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\acllib.cpp" />
+    <ClCompile Include="global_param.cpp" />
+    <ClCompile Include="key_interrupt.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="tank.cpp" />
     <ClCompile Include="wall_map.cpp" />
@@ -96,6 +98,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\acllib.h" />
+    <ClInclude Include="global_param.h" />
+    <ClInclude Include="key_interrupt.h" />
     <ClInclude Include="tank.h" />
     <ClInclude Include="wall_map.h" />
     <ClInclude Include="solid_object.h" />

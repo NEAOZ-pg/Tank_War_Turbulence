@@ -9,7 +9,11 @@
 #define ANGULAR_V 10
 #define LINEAR_V 10
 
-SolidObject::SolidObject(int user, ACL_Color color, int center[], 
+SolidObject::SolidObject()
+{
+}
+
+SolidObject::SolidObject(int user, ACL_Color color, int center[],
 	int angle, int half_length, int half_width, int speed) :
 	_user(user), _color(color), _angle(angle), _half_length(half_length), _half_width(half_width), _speed(speed)
 {
@@ -96,9 +100,6 @@ void SolidObject::move_for_per_time()
 {
 	_center[0] += (int)(cos(_angle * PI / 180) * LINEAR_V);
 	_center[1] += (int)(sin(_angle * PI / 180) * LINEAR_V);
-	std::cout << _angle << '\n';
-	std::cout << cos(_angle) << '\n';
-	std::cout << sin(_angle) << '\n';
 }
 
 void SolidObject::move_back_per_time()
