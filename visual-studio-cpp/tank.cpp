@@ -1,17 +1,17 @@
-#include <Windows.h>
-#include <stdlib.h>
-
 #include "tank.h"
 
-#include "acllib.h"
-#include "wall_map.h"
+#include <stdlib.h>
+
+#define TANK_LENGTH	25
+#define TANK_WIDTH	15
+#define TANK_SPEED	8
 
 Tank::Tank()
 {
 }
 
-Tank::Tank(int user, ACL_Color color, int* center, int angle, int half_length, int half_width, int speed) :
-	SolidObject(user, color, center, angle, half_length, half_width, speed)
+Tank::Tank(int user, ACL_Color color, int* center, int angle) :
+	SolidObject(user, color, center[0], center[1], angle, TANK_LENGTH, TANK_WIDTH, TANK_SPEED)
 {
 }
 
@@ -58,7 +58,7 @@ void Tank::tank_show()
 }
 
 /**
-  * @brief  随机生成center的位置
+  * @brief  随机生成tank的位置
   * @param  my_map : wallmap
   * @retval random_center[2]
   */
@@ -74,6 +74,11 @@ int* random_coordinate(WallMap my_map)
 	return random_c;
 }
 
+/**
+  * @brief  随机生成oriantation
+  * @param  NONE
+  * @retval angle
+  */
 int random_angle()
 {
 	return rand() % 360;

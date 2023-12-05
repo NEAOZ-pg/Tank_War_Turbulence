@@ -23,8 +23,11 @@ protected:
 
 public:
 	SolidObject();
-	SolidObject(int user, ACL_Color color, int center[], int angle, int half_length, int half_width, int speed);
+	SolidObject(int user, ACL_Color color, int center0, int center1, int angle, int half_length, int half_width, int speed);
 	~SolidObject();
+
+	int get_angle();
+	POINT* get_points();
 
 	void move_for_per_time();
 	void move_back_per_time();

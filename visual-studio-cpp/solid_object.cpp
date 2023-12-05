@@ -1,28 +1,36 @@
-#include <Windows.h>
-#include <math.h>
-#include <iostream>
 #include "solid_object.h"
-#include "wall_map.h"
-#include "acllib.h"
+
+#include <math.h>
 
 #define PI 3.14
-#define ANGULAR_V 10
-#define LINEAR_V 10
+#define ANGULAR_V 5
 
 SolidObject::SolidObject()
 {
 }
 
-SolidObject::SolidObject(int user, ACL_Color color, int center[],
+SolidObject::SolidObject(int user, ACL_Color color, int center0, int center1,
 	int angle, int half_length, int half_width, int speed) :
 	_user(user), _color(color), _angle(angle), _half_length(half_length), _half_width(half_width), _speed(speed)
 {
-	_center[0] = center[0];
-	_center[1] = center[1];
+	_center[0] = center0;
+	_center[1] = center1;
 }
 
 SolidObject::~SolidObject()
 {
+}
+
+int SolidObject::get_angle()
+{
+	return _angle;
+}
+
+POINT* SolidObject::get_points()
+{
+	POINT* points = new POINT[4];
+	_points_symmetric(points);
+	return points;
 }
 
 // protected
@@ -98,14 +106,14 @@ int SolidObject::_judge_crash(int* new_center)
 
 void SolidObject::move_for_per_time()
 {
-	_center[0] += (int)(cos(_angle * PI / 180) * LINEAR_V);
-	_center[1] += (int)(sin(_angle * PI / 180) * LINEAR_V);
+	_center[0] += (int)(cos(_angle * PI / 180) * _speed);
+	_center[1] += (int)(sin(_angle * PI / 180) * _speed);
 }
 
 void SolidObject::move_back_per_time()
 {
-	_center[0] -= (int)(cos(_angle * PI / 180) * LINEAR_V);
-	_center[1] -= (int)(sin(_angle * PI / 180) * LINEAR_V);
+	_center[0] -= (int)(cos(_angle * PI / 180) * _speed);
+	_center[1] -= (int)(sin(_angle * PI / 180) * _speed);
 }
 
 void SolidObject::rotate_CW_per_time()

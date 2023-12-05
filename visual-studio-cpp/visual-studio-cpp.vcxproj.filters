@@ -45,6 +45,9 @@
     <ClCompile Include="global_param.cpp">
       <Filter>utility files</Filter>
     </ClCompile>
+    <ClCompile Include="bullet.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\acllib.h">
@@ -64,6 +67,9 @@
     </ClInclude>
     <ClInclude Include="global_param.h">
       <Filter>utility files</Filter>
+    </ClInclude>
+    <ClInclude Include="bullet.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -6,11 +6,13 @@
 #include "acllib.h"
 #include "wall_map.h"
 #include "tank.h"
+#include "bullet.h"
 
-#define interface_game_init 0
-#define interface_game_play 1
+#define INTERFACE_GAME_INIT 0
+#define INTERFACE_GAME_PLAY 1
+#define BULLET_INTERVAL 10
 
-#define TimeID_Game 0
+#define TIMEID_GAME 0
 
 //UP DOWN LEFT RIGHT
 int map1[3][3][4] = {
@@ -53,12 +55,24 @@ void map_init(int length,int width)
 void timeevent(int timeID);
 
 int interface_state = 0;
+
 WallMap map_test;
 Tank tank1;
 Tank tank2;
+Bullet tank1_bullet0(1);
+Bullet tank1_bullet1(1);
+Bullet tank1_bullet2(1);
+Bullet tank1_bullet3(1);
+Bullet tank1_bullet4(1);
+Bullet tank2_bullet0(2);
+Bullet tank2_bullet1(2);
+Bullet tank2_bullet2(2);
+Bullet tank2_bullet3(2);
+Bullet tank2_bullet4(2);
+int tank1_bullet_interval;
+int tank2_bullet_interval;
 
-
-int Setup()		//
+int Setup()		//	
 {
 	srand((unsigned int)time(0));
 	initWindow("Test", 200, 50, WINDOW_LENGTH, WINDOW_WIDTH);
@@ -66,15 +80,14 @@ int Setup()		//
 	registerKeyboardEvent(keyevent);
 	registerTimerEvent(timeevent);
 	startTimer(0, 20);
-
 	return 0;
 }
 
 void timeevent(int timeID)
 {
-	if (timeID == TimeID_Game)
+	if (timeID == TIMEID_GAME)
 	{
-		if (interface_state == interface_game_init)
+		if (interface_state == INTERFACE_GAME_INIT)
 		{
 			beginPaint();
 
@@ -83,19 +96,19 @@ void timeevent(int timeID)
 			map_test = map_i;
 			map_test.wallmap_show();
 
-			Tank tank_1(1, GREEN, random_coordinate(map_test), random_angle(), 25, 15, 3);
+			Tank tank_1(1, GREEN, random_coordinate(map_test), random_angle());
 			tank1 = tank_1;
 			tank1.tank_show();
 
-			Tank tank_2(2, BLUE, random_coordinate(map_test), random_angle(), 25, 15, 3);
+			Tank tank_2(2, BLUE, random_coordinate(map_test), random_angle());
 			tank2 = tank_2;
 			tank2.tank_show();
 
 			endPaint();
 
-			interface_state = interface_game_play;
+			interface_state = INTERFACE_GAME_PLAY;
 		}
-		else if (interface_state == interface_game_play)
+		else if (interface_state == INTERFACE_GAME_PLAY)
 		{
 			if (key_A)
 			{
@@ -137,9 +150,22 @@ void timeevent(int timeID)
 
 				endPaint();
 			}
-			if (key_SPACE)
+			if (key_SPACE && !tank1_bullet_interval)
 			{
-				//tank1 bullet
+				POINT* points = tank1.get_points();
+				if (!tank1_bullet0.is_exist())
+					tank1_bullet0.init(tank1.get_angle(), points);
+				else if (!tank1_bullet1.is_exist())
+					tank1_bullet1.init(tank1.get_angle(), points);
+				else if (!tank1_bullet2.is_exist())
+					tank1_bullet2.init(tank1.get_angle(), points);
+				else if (!tank1_bullet3.is_exist())
+					tank1_bullet3.init(tank1.get_angle(), points);
+				else if (!tank1_bullet4.is_exist())
+					tank1_bullet4.init(tank1.get_angle(), points);
+				delete[] points;
+
+				tank1_bullet_interval = BULLET_INTERVAL;
 			}
 			if (key_LEFT)
 			{
@@ -181,10 +207,37 @@ void timeevent(int timeID)
 
 				endPaint();
 			}
-			if (key_ENTER)
+			if (key_ENTER && !tank2_bullet_interval)
 			{
-				//tank2 bullet
+				POINT* points = tank2.get_points();
+				if (!tank2_bullet0.is_exist())
+					tank2_bullet0.init(tank2.get_angle(), points);
+				else if (!tank2_bullet1.is_exist())
+					tank2_bullet1.init(tank2.get_angle(), points);
+				else if (!tank2_bullet2.is_exist())
+					tank2_bullet2.init(tank2.get_angle(), points);
+				else if (!tank2_bullet3.is_exist())
+					tank2_bullet3.init(tank2.get_angle(), points);
+				else if (!tank2_bullet4.is_exist())
+					tank2_bullet4.init(tank2.get_angle(), points);
+				delete[] points;
+
+				tank2_bullet_interval = BULLET_INTERVAL;
 			}
 		}
+		if (tank1_bullet0.is_exist())	tank1_bullet0.pre_time();
+		if (tank1_bullet1.is_exist())	tank1_bullet1.pre_time();
+		if (tank1_bullet2.is_exist())	tank1_bullet2.pre_time();
+		if (tank1_bullet3.is_exist())	tank1_bullet3.pre_time();
+		if (tank1_bullet4.is_exist())	tank1_bullet4.pre_time();
+
+		if (tank2_bullet0.is_exist())	tank2_bullet0.pre_time();
+		if (tank2_bullet1.is_exist())	tank2_bullet1.pre_time();
+		if (tank2_bullet2.is_exist())	tank2_bullet2.pre_time();
+		if (tank2_bullet3.is_exist())	tank2_bullet3.pre_time();
+		if (tank2_bullet4.is_exist())	tank2_bullet4.pre_time();
+
+		if (tank1_bullet_interval)	--tank1_bullet_interval;
+		if (tank2_bullet_interval)	--tank2_bullet_interval;
 	}
 }

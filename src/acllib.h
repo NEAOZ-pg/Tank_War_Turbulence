@@ -57,6 +57,7 @@ Be sure to change the leading folders as your installation.
 #define MAGENTA			RGB(255, 0, 255)
 #define YELLOW			RGB(255, 255, 0)
 #define WHITE			RGB(255, 255, 255)
+#define GREY			RGB(128, 128, 128)
 
 #define EMPTY				0xffffffff
 #define DEFAULT				-1

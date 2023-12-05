@@ -1,9 +1,5 @@
-#include <Windows.h>
 #include "wall_map.h"
 
-#include <iostream>
-#include <cstring>
-#include "acllib.h"
 
 WallMap::WallMap()
 {
