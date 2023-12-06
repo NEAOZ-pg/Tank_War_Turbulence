@@ -121,7 +121,7 @@ void WallMap::_wallmap_showoneblank(int line, int column)
 	setBrushStyle(BRUSH_STYLE_SOLID);
 
 	setPenColor(BLACK);
-	setPenWidth(0);
+	setPenWidth(1);
 	setPenStyle(PEN_STYLE_SOLID);
 
 	int i = 0;
@@ -150,7 +150,7 @@ void WallMap::_wallmap_showframe()
 	setBrushStyle(BRUSH_STYLE_SOLID);
 
 	setPenColor(BLACK);
-	setPenWidth(0);
+	setPenWidth(1);
 	setPenStyle(PEN_STYLE_SOLID);
 
 	rectangle(_axis_x - UNIT_LINE, _axis_y - UNIT_LINE,

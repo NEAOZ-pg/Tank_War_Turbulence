@@ -6,18 +6,42 @@
 
 void Bullet::_bullet_unshow()
 {
-	setPenColor(EMPTY);
+	setPenColor(WHITE);
+	setPenWidth(0);
 	setBrushColor(WHITE);
 	setBrushStyle(BRUSH_STYLE_SOLID);
-	ellipse(_center[0] + _half_length, _center[1] + _half_width, _center[0] - _half_width, _center[1] - _half_width);
+	ellipse(_center[0] + RADIUS, _center[1] + RADIUS, _center[0] - RADIUS, _center[1] - RADIUS);
 }
 
 void Bullet::_bullet_show()
 {
-	setPenColor(EMPTY);
+	setPenColor(WHITE); 
+	setPenWidth(0);
 	setBrushColor(_color);
 	setBrushStyle(BRUSH_STYLE_SOLID);
-	ellipse(_center[0] + _half_length, _center[1] + _half_width, _center[0] - _half_width, _center[1] - _half_width);
+	ellipse(_center[0] + RADIUS, _center[1] + RADIUS, _center[0] - RADIUS, _center[1] - RADIUS);
+}
+
+//just judege the map
+int Bullet::_bullet_judge()	//0: NONE	1:UP	2:down		3:left		4:right
+{
+	int new_center[2] =
+	{
+		 _center[0] + (int)(_half_length * cos(_angle * PI / 180)
+			+ _half_width * cos((_angle + 90) * PI / 180)),
+		_center[1] + (int)(_half_length * sin(_angle * PI / 180)
+			+ _half_width * sin((_angle + 90) * PI / 180)),
+	};
+
+	if (getPixel(new_center[0], new_center[1] - RADIUS + 3) == BLACK)
+		return 1;
+	if (getPixel(new_center[0], new_center[1] + RADIUS + 3) == BLACK)
+		return 2;
+	if (getPixel(new_center[0] - RADIUS + 2, new_center[1]) == BLACK)
+		return 3;
+	if (getPixel(new_center[0] + RADIUS - 2, new_center[1]) == BLACK)
+		return 4;
+	return 0;
 }
 
 Bullet::Bullet(int user):
@@ -43,18 +67,23 @@ bool Bullet::is_exist()
 
 void Bullet::pre_time()
 {
-	beginPaint();
-
 	_bullet_unshow();
 	if (--_survive_time == 0)
 	{
 		_is_use = 0;
-		endPaint();
 		return;
 	}
-	//JUDGE!!!
+	int judge = _bullet_judge();
+	if (judge == 1)
+		_angle = 540 - _angle;
+	else if (judge == 2)
+		_angle = 180 - _angle;
+	else if (judge == 3)
+		_angle = 360 - _angle;
+	else if (judge == 4)
+		_angle = 360 - _angle;
+
 	move_for_per_time();
 	_bullet_show();
 
-	endPaint();
 }

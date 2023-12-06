@@ -15,6 +15,7 @@ private:
 private:
 	void _bullet_unshow();
 	void _bullet_show();
+	int _bullet_judge();
 
 public:
 	Bullet(int user);

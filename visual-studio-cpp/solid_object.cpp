@@ -1,8 +1,5 @@
 #include "solid_object.h"
 
-#include <math.h>
-
-#define PI 3.14
 #define ANGULAR_V 5
 
 SolidObject::SolidObject()
@@ -34,6 +31,16 @@ POINT* SolidObject::get_points()
 }
 
 // protected
+
+int* SolidObject::_next_move()
+{
+	int* new_center = new int[2];
+	new_center[0] = _center[0] + (long)(_half_length * cos(_angle * PI / 180)
+		+ _half_width * cos((_angle + 90) * PI / 180));
+	new_center[2] = _center[1] + (long)(_half_length * sin(_angle * PI / 180)
+		+ _half_width * sin((_angle + 90) * PI / 180));
+	return new_center;
+}
 
 /**
   * @brief  计算右方上角的点（_angle = 0)的坐标

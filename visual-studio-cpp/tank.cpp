@@ -37,7 +37,7 @@ POINT* Tank::_points_cannon(POINT* points)
 
 void Tank::tank_unshow()
 {
-	setPenColor(EMPTY);
+	setPenColor(WHITE);
 	setBrushColor(WHITE);
 	setBrushStyle(BRUSH_STYLE_SOLID);
 	POINT points[4];
@@ -47,7 +47,7 @@ void Tank::tank_unshow()
 
 void Tank::tank_show()
 {
-	setPenColor(EMPTY);
+	setPenColor(WHITE);
 	setBrushColor(_color);
 	setBrushStyle(BRUSH_STYLE_SOLID);
 	POINT points[4];

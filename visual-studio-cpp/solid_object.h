@@ -2,9 +2,12 @@
 #define __SOLID_OBJECT_H__
 
 #include <Windows.h>
+#include <math.h>
 
 #include "acllib.h"
 #include "wall_map.h"
+
+#define PI 3.1415926
 
 class SolidObject
 {
@@ -17,6 +20,7 @@ protected:
 	int _half_width;		//图片宽度的1/2		方便绘图时可以直接根据center对称来绘制
 	int _speed;
 
+	int* _next_move();
 	POINT _point_coordinates();
 	void _points_symmetric(POINT* points);
 	int _judge_crash(int* new_center);

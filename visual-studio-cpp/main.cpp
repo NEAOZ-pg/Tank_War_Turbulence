@@ -74,12 +74,22 @@ int tank2_bullet_interval;
 
 int Setup()		//	
 {
+	//menu：
+	/*
+	将自己写的menu打包成函数，在该处运行，显示menu
+	满足每个界面都用	仅一个函数（这里指仅能在setup里面仅调用一个函数，函数里面的事情我不管）	就可以在windows上显示
+	至于界面的跳转，暂时通过	手动更改上面的一个函数，然后再次编译运行		来实现不同菜单的“”硬切换“”
+	先把这个做出来，剩余的再说
+	*/
 	srand((unsigned int)time(0));
 	initWindow("Test", 200, 50, WINDOW_LENGTH, WINDOW_WIDTH);
 	initConsole();
 	registerKeyboardEvent(keyevent);
 	registerTimerEvent(timeevent);
 	startTimer(0, 20);
+
+	
+	
 	return 0;
 }
 
@@ -225,6 +235,8 @@ void timeevent(int timeID)
 				tank2_bullet_interval = BULLET_INTERVAL;
 			}
 		}
+
+		beginPaint();
 		if (tank1_bullet0.is_exist())	tank1_bullet0.pre_time();
 		if (tank1_bullet1.is_exist())	tank1_bullet1.pre_time();
 		if (tank1_bullet2.is_exist())	tank1_bullet2.pre_time();
@@ -236,6 +248,7 @@ void timeevent(int timeID)
 		if (tank2_bullet2.is_exist())	tank2_bullet2.pre_time();
 		if (tank2_bullet3.is_exist())	tank2_bullet3.pre_time();
 		if (tank2_bullet4.is_exist())	tank2_bullet4.pre_time();
+		endPaint();
 
 		if (tank1_bullet_interval)	--tank1_bullet_interval;
 		if (tank2_bullet_interval)	--tank2_bullet_interval;
