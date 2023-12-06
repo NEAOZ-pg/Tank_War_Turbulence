@@ -35,9 +35,9 @@ POINT* SolidObject::get_points()
 int* SolidObject::_next_move()
 {
 	int* new_center = new int[2];
-	new_center[0] = _center[0] + (long)(_half_length * cos(_angle * PI / 180)
+	new_center[0] = _center[0] + (int)(_half_length * cos(_angle * PI / 180)
 		+ _half_width * cos((_angle + 90) * PI / 180));
-	new_center[2] = _center[1] + (long)(_half_length * sin(_angle * PI / 180)
+	new_center[1] = _center[1] + (int)(_half_length * sin(_angle * PI / 180)
 		+ _half_width * sin((_angle + 90) * PI / 180));
 	return new_center;
 }
@@ -77,6 +77,7 @@ void SolidObject::_points_symmetric(POINT *points)
 	points[3].y = 2 * _center[1] - points[1].y;
 }
 
+/*
 int SolidObject::_judge_crash(int* new_center)
 {
 	POINT points[4];
@@ -104,23 +105,130 @@ int SolidObject::_judge_crash(int* new_center)
 
 	返回值，0：不是边界，1，边界在上面撞到，2，边界在下面撞到
 					3，边界在左面撞到，4，边界在下面撞到
-	*/
+	
 
 	return 0;
 }
+*/
+
+int SolidObject::_judge_crash()
+{
+	POINT points[4];
+	ACL_Color color;
+	_points_symmetric(points);
+	POINT target, max, min;//小车四个角的坐标 [0]是右上角，逆时针旋转
+	int ans = 0, i, j, s;//小车半长和半宽，具体数值后期补一下
+	//这里应该先调用外部函数给小车四个角赋值，具体函数名未知，先不写
+	float k[4];//各边斜率
+
+	//for(i = 0; i < 4; ++i)
+	//{
+	//	points[i].x -= _center[0];
+	//	points[i].y -= _center[1];
+	//}//初始化坐标捏
+
+	//斜率存在，接下来采用纯直线法，求各边的直线方程
+	for (i = 0; i < 3; ++i)
+		k[i] = (points[i].y - points[i + 1].y) / (points[i].x - points[i + 1].x);
+	//分别是上，左，下边斜率；
+	k[3] = (points[3].y - points[1].y) / (points[3].x - points[1].x);
+	//右边斜率；
+	for (i = 0; i < 3; ++i)
+	{
+		if (points[i].x >= points[i + 1].x)
+		{
+			max = points[i];
+			min = points[i + 1];
+		}
+		else {
+			min = points[i];
+			max = points[i + 1];
+		}//判断横坐标大小
+		for (j = min.x; j <= max.x; ++j)
+		{
+			target.x = j;//调整横坐标
+			if (j + k[i] - int(j + k[i]) > 0)
+				s = 1;
+			else s = 0;//判断纵坐标是不是整数
+			if (s == 0)
+			{
+				target.y = (int)(j + k[i]); //target表示直线上每一个点
+				color = getPixel(target.x, target.y);
+				if (color != WHITE)
+					return i + 1;
+			}//判断整数点颜色
+			else {
+				target.y = (int)(j + k[i]);
+				color = getPixel(target.x, target.y);
+				if (color != WHITE)
+					return i + 1;
+				else {
+					target.y = (int)(j + k[i]) + 1;
+					color = getPixel(target.x, target.y);
+					if (color != WHITE)
+						return i + 1;
+				}//判断非整数点颜色
+			}
+		}
+	}//这只是前三条边的判断
+	//第四条边因为标号的问题需要单独处理
+	if (points[3].x >= points[0].x)
+	{
+		max = points[3];
+		min = points[0];
+	}
+	else {
+		min = points[3];
+		max = points[0];
+	}
+	for (j = min.x; j <= max.x; ++j)
+	{
+		target.x = j;
+		if (j + k[3] - int(j + k[3]) > 0)
+			s = 1;
+		else s = 0;
+		if (s == 0)
+		{
+			target.y = (int)(j + k[3]);
+			color = getPixel(target.x, target.y);
+			if (color != WHITE)
+				return 4;
+		}
+		else {
+			target.y = (int)(j + k[3]);
+			color = getPixel(target.x, target.y);
+			if (color != WHITE)
+				return 4;
+			else {
+				target.y = (int)(i + k[3]) + 1;
+				color = getPixel(target.x, target.y);
+				if (color != WHITE)
+					return 4;
+			}
+		}
+	}
+	return 0;
+}
+//这个有一个问题，就是有两边同时撞墙的话它会从上边逆时针旋转返回，无法告诉你两个都撞上了。
 
 //public
 
 void SolidObject::move_for_per_time()
 {
-	_center[0] += (int)(cos(_angle * PI / 180) * _speed);
-	_center[1] += (int)(sin(_angle * PI / 180) * _speed);
+	if (!_judge_crash())
+	{
+		_center[0] += (int)(cos(_angle * PI / 180) * _speed);
+		_center[1] += (int)(sin(_angle * PI / 180) * _speed);
+	}
 }
 
 void SolidObject::move_back_per_time()
 {
-	_center[0] -= (int)(cos(_angle * PI / 180) * _speed);
-	_center[1] -= (int)(sin(_angle * PI / 180) * _speed);
+	if (!_judge_crash())
+	{
+		_center[0] -= (int)(cos(_angle * PI / 180) * _speed);
+		_center[1] -= (int)(sin(_angle * PI / 180) * _speed);
+	}
 }
 
 void SolidObject::rotate_CW_per_time()

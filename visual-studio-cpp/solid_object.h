@@ -23,7 +23,7 @@ protected:
 	int* _next_move();
 	POINT _point_coordinates();
 	void _points_symmetric(POINT* points);
-	int _judge_crash(int* new_center);
+	int _judge_crash();
 
 public:
 	SolidObject();
