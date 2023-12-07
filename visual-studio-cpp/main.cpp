@@ -105,12 +105,11 @@ void timeevent(int timeID)
 			WallMap map_i(4, 3, testmap);
 			map_test = map_i;
 			map_test.wallmap_show();
-
 			Tank tank_1(1, GREEN, random_coordinate(map_test), random_angle());
 			tank1 = tank_1;
 			tank1.tank_show();
 
-			Tank tank_2(2, BLUE, random_coordinate(map_test), random_angle());
+			Tank tank_2(2, BLUE, random_coordinate(map_test), 0);
 			tank2 = tank_2;
 			tank2.tank_show();
 

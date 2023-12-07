@@ -40,10 +40,8 @@ void SolidObject::_assign_center(int* center1, const int* center2)
 
 void SolidObject::_next_move(int* new_center)
 {
-	new_center[0] = _center[0] + (int)(_half_length * cos(_angle * PI / 180)
-		+ _half_width * cos((_angle + 90) * PI / 180));
-	new_center[1] = _center[1] + (int)(_half_length * sin(_angle * PI / 180)
-		+ _half_width * sin((_angle + 90) * PI / 180));
+	new_center[0] = _center[0] + (int)(cos(_angle * PI / 180) * _speed);
+	new_center[1] = _center[1] + (int)(sin(_angle * PI / 180) * _speed);
 }
 
 /**

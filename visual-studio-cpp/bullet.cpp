@@ -32,7 +32,9 @@ int Bullet::_bullet_state_judge(int* center)
 		return 3;
 	if (getPixel(center[0] + RADIUS, center[1]) == BLACK)
 		return 4;
-
+	if (getPixel(center[0] + (int)((RADIUS + 1) * cos(_angle * PI / 180)),
+		center[1] + (int)((RADIUS + 1) * sin(_angle * PI / 180))) == BLACK)
+		return 5;
 	return 0;
 }
 
@@ -41,14 +43,13 @@ void Bullet::_bullet_judge()	//0: NONE	1:UP	2:down		3:left		4:right
 {
 	int next_center[2];
 	_next_move(next_center);
-	int i = 0;
-
 	int pre_center[2];
 	_assign_center(pre_center, _center);
 	int center[2];
-	int judge = 0;
+	int judge = 0, i = 0;
 	for (i = 0; i <= _speed; i++)
 	{
+
 		center[0] = (_center[0] * (_speed - i) + next_center[0] * i) / _speed;
 		center[1] = (_center[1] * (_speed - i) + next_center[1] * i) / _speed;
 		judge = _bullet_state_judge(center);
@@ -56,34 +57,42 @@ void Bullet::_bullet_judge()	//0: NONE	1:UP	2:down		3:left		4:right
 			break;
 		_assign_center(pre_center, center);
 	}
+
 	if (judge == 0)
 	{
 		_assign_center(_center, next_center);
 	}
 	else if (judge == 1)
 	{
-		_angle = 180 - _angle;
+		_angle = (360 - _angle) % 360;
 		_center[0] = next_center[0];
 		_center[1] = 2 * pre_center[1] - next_center[1];
 	}
 	else if (judge == 2)
 	{
-		_angle = 540 - _angle;
+		_angle = (360 - _angle) % 360;
 		_center[0] = next_center[0];
 		_center[1] = 2 * pre_center[1] - next_center[1];
 	}
 	else if (judge == 3)
 	{
-		_angle = 360 - _angle;
+		_angle = (540 - _angle) % 360;
 		_center[0] = 2 * pre_center[0] - next_center[0];
 		_center[1] = next_center[1];
 	}
 	else if (judge == 4)
 	{
-		_angle = 360 - _angle;
+		_angle = (540 - _angle) % 360;
 		_center[0] = 2 * pre_center[0] - next_center[0];
 		_center[1] = next_center[1];
 	}
+	else if (judge == 5)
+	{
+		_angle = (_angle + 180) % 360;
+		_center[0] = 2 * pre_center[0] - next_center[0];
+		_center[1] = 2 * pre_center[1] - next_center[1];
+	}
+
 
 }
 
