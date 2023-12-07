@@ -1,6 +1,6 @@
 #include "bullet.h"
 
-#define EXISTENCE_TIME 150	//  实际时长未知（定时器精度较差），视程序而定
+#define EXISTENCE_TIME 300	//  实际时长未知（定时器精度较差），视程序而定
 #define RADIUS 8
 #define BULLET_SPEED 5
 
@@ -32,26 +32,26 @@ int Bullet::_bullet_state_judge(int* center)
 		return 3;
 	if (getPixel(center[0] + RADIUS, center[1]) == BLACK)
 		return 4;
-	if (getPixel(center[0] + (int)((RADIUS + 1) * cos(_angle * PI / 180)),
-		center[1] + (int)((RADIUS + 1) * sin(_angle * PI / 180))) == BLACK)
-		return 5;
+	if (getPixel(center[0] + (int)((RADIUS + 2) * cos(_angle * PI / 180)),
+		center[1] + (int)((RADIUS + 2) * sin(_angle * PI / 180))) == BLACK)
+		return 5;		//防止正好打到wallmap的corner(但是仍然判断不足，懒得再写了。。)
 	return 0;
 }
 
 //just judege the map
-void Bullet::_bullet_judge()	//0: NONE	1:UP	2:down		3:left		4:right
+void Bullet::_bullet_move_judge()	//0: NONE	1:UP	2:down		3:left		4:right
 {
 	int next_center[2];
-	_next_move(next_center);
+	_for_move(next_center);
 	int pre_center[2];
 	_assign_center(pre_center, _center);
 	int center[2];
 	int judge = 0, i = 0;
-	for (i = 0; i <= _speed; i++)
+	for (i = 0; i <= _linear_v; i++)
 	{
 
-		center[0] = (_center[0] * (_speed - i) + next_center[0] * i) / _speed;
-		center[1] = (_center[1] * (_speed - i) + next_center[1] * i) / _speed;
+		center[0] = (_center[0] * (_linear_v - i) + next_center[0] * i) / _linear_v;
+		center[1] = (_center[1] * (_linear_v - i) + next_center[1] * i) / _linear_v;
 		judge = _bullet_state_judge(center);
 		if (judge != 0)
 			break;
@@ -97,7 +97,7 @@ void Bullet::_bullet_judge()	//0: NONE	1:UP	2:down		3:left		4:right
 }
 
 Bullet::Bullet(int user):
-	SolidObject(user, GREY, 0, 0, 0, RADIUS, RADIUS, BULLET_SPEED),
+	SolidObject(user, GREY, 0, 0, 0, RADIUS, RADIUS, BULLET_SPEED, 0),
 	_is_use(0),_survive_time(0)
 {
 }
@@ -125,9 +125,8 @@ void Bullet::pre_time()
 		_is_use = 0;
 		return;
 	}
-	_bullet_judge();
+	_bullet_move_judge();
 
-	//move_for_per_time();
 	_bullet_show();
 
 }

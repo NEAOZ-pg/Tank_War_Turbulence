@@ -1,14 +1,14 @@
 #include "solid_object.h"
 
-#define ANGULAR_V 10
-
 SolidObject::SolidObject()
 {
+
 }
 
 SolidObject::SolidObject(int user, ACL_Color color, int center0, int center1,
-	int angle, int half_length, int half_width, int speed) :
-	_user(user), _color(color), _angle(angle), _half_length(half_length), _half_width(half_width), _speed(speed)
+	int angle, int half_length, int half_width, int linear_v, int angular_v) :
+	_user(user), _color(color), _angle(angle), _half_length(half_length), 
+	_half_width(half_width), _linear_v(linear_v), _angular_v(angular_v)
 {
 	_center[0] = center0;
 	_center[1] = center1;
@@ -38,10 +38,16 @@ void SolidObject::_assign_center(int* center1, const int* center2)
 	center1[1] = center2[1];
 }
 
-void SolidObject::_next_move(int* new_center)
+void SolidObject::_for_move(int* new_center)
 {
-	new_center[0] = _center[0] + (int)(cos(_angle * PI / 180) * _speed);
-	new_center[1] = _center[1] + (int)(sin(_angle * PI / 180) * _speed);
+	new_center[0] = _center[0] + (int)(cos(_angle * PI / 180) * _linear_v);
+	new_center[1] = _center[1] + (int)(sin(_angle * PI / 180) * _linear_v);
+}
+
+void SolidObject::_back_move(int* new_center)
+{
+	new_center[0] = _center[0] - (int)(cos(_angle * PI / 180) * _linear_v);
+	new_center[1] = _center[1] - (int)(sin(_angle * PI / 180) * _linear_v);
 }
 
 /**
@@ -118,8 +124,8 @@ void SolidObject::move_for_per_time()
 {
 	if (!_judge_crash())
 	{
-		_center[0] += (int)(cos(_angle * PI / 180) * _speed);
-		_center[1] += (int)(sin(_angle * PI / 180) * _speed);
+		_center[0] += (int)(cos(_angle * PI / 180) * _linear_v);
+		_center[1] += (int)(sin(_angle * PI / 180) * _linear_v);
 	}
 }
 
@@ -127,20 +133,20 @@ void SolidObject::move_back_per_time()
 {
 	if (!_judge_crash())
 	{
-		_center[0] -= (int)(cos(_angle * PI / 180) * _speed);
-		_center[1] -= (int)(sin(_angle * PI / 180) * _speed);
+		_center[0] -= (int)(cos(_angle * PI / 180) * _linear_v);
+		_center[1] -= (int)(sin(_angle * PI / 180) * _linear_v);
 	}
 }
 
 void SolidObject::rotate_CW_per_time()
 {
-	_angle = (_angle + ANGULAR_V) % 360;
+	_angle = (_angle + _angular_v) % 360;
 	//ÅÐ¶Ï£¡
 }
 
 void SolidObject::rotate_CCW_per_time()
 {
-	_angle = (_angle - ANGULAR_V) % 360;
+	_angle = (_angle - _angular_v) % 360;
 	//ÅÐ¶Ï£¡
 }
 

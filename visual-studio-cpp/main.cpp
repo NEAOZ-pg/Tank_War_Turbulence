@@ -109,7 +109,7 @@ void timeevent(int timeID)
 			tank1 = tank_1;
 			tank1.tank_show();
 
-			Tank tank_2(2, BLUE, random_coordinate(map_test), 0);
+			Tank tank_2(2, BLUE, random_coordinate(map_test), random_angle());
 			tank2 = tank_2;
 			tank2.tank_show();
 

@@ -18,17 +18,19 @@ protected:
 	int _angle;		//水平向右为正,顺时针自加
 	int _half_length;	//图片长度的1/2
 	int _half_width;		//图片宽度的1/2		方便绘图时可以直接根据center对称来绘制
-	int _speed;
+	int _linear_v;
+	int _angular_v;
 
 	void _assign_center(int* center1, const int* center2);
-	void _next_move(int* new_center);
+	void _for_move(int* new_center);
+	void _back_move(int* new_center);
 	POINT _point_coordinates();
 	void _points_symmetric(POINT* points);
 	int _judge_crash();
 
 public:
 	SolidObject();
-	SolidObject(int user, ACL_Color color, int center0, int center1, int angle, int half_length, int half_width, int speed);
+	SolidObject(int user, ACL_Color color, int center0, int center1, int angle, int half_length, int half_width, int linear_v, int angular_v);
 	~SolidObject();
 
 	int get_angle();

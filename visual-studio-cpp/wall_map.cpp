@@ -79,7 +79,6 @@ WallMap& WallMap::operator=(const WallMap& map1)
 		}
 	}
 	return *this;
-	// TODO: insert return statement here
 }
 
 WallMap::~WallMap()
@@ -99,7 +98,7 @@ WallMap::~WallMap()
 
 //private
 /**
-  * @brief  判断SolidObject是否crash Map
+  * @brief  判断某line和column的单位block的四边情况
   * @param  line：行坐标（对应width）
   * @param	column: 列坐标（对应length）
   * @retval frontier[4]: f[0]：up，f[1]：down，f[2]：left，f[3]：right
@@ -115,7 +114,13 @@ int* WallMap::_get_frontier(int line, int column)
 	return frontier;
 }
 
-void WallMap::_wallmap_showoneblank(int line, int column)
+/**
+  * @brief  绘制一个单位block的四边的Wallmap
+  * @param  line：0开始
+  * @param	column: 0开始
+  * @retval None
+  */
+void WallMap::_wallmap_showoneblock(int line, int column)
 {
 	setBrushColor(BLACK);
 	setBrushStyle(BRUSH_STYLE_SOLID);
@@ -144,6 +149,11 @@ void WallMap::_wallmap_showoneblank(int line, int column)
 	}
 }
 
+/**
+  * @brief  加粗Map的边框，防止Map边框穿角（可以删掉这个看看运行效果）
+  * @param  None
+  * @retval None
+  */
 void WallMap::_wallmap_showframe()
 {
 	setBrushColor(BLACK);
@@ -194,7 +204,7 @@ void WallMap::wallmap_show()
 	int line = 0, column = 0;
 	for (line = 0; line < _width; line++)
 		for (column = 0; column < _length; column++)
-			_wallmap_showoneblank(line, column);
+			_wallmap_showoneblock(line, column);
 	
 	_wallmap_showframe();
 }

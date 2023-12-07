@@ -16,7 +16,7 @@ private:
 	void _bullet_unshow();
 	void _bullet_show();
 	int _bullet_state_judge(int* center);
-	void _bullet_judge();
+	void _bullet_move_judge();
 
 public:
 	Bullet(int user);

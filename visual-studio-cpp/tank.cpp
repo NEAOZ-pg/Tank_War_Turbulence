@@ -2,16 +2,17 @@
 
 #include <stdlib.h>
 
-#define TANK_LENGTH	25
-#define TANK_WIDTH	15
-#define TANK_SPEED	8
+#define TANK_LENGTH		25
+#define TANK_WIDTH		15
+#define TANK_LINEAR_V	9
+#define TANK_ANGULAR_V	10
 
 Tank::Tank()
 {
 }
 
 Tank::Tank(int user, ACL_Color color, int* center, int angle) :
-	SolidObject(user, color, center[0], center[1], angle, TANK_LENGTH, TANK_WIDTH, TANK_SPEED)
+	SolidObject(user, color, center[0], center[1], angle, TANK_LENGTH, TANK_WIDTH, TANK_LINEAR_V, TANK_ANGULAR_V)
 {
 }
 
@@ -77,11 +78,11 @@ int* random_coordinate(WallMap my_map)
 }
 
 /**
-  * @brief  随机生成oriantation
+  * @brief  随机生成angle(0,90,180,270)
   * @param  NONE
   * @retval angle
   */
 int random_angle()
 {
-	return rand() % 360;
+	return rand() % 4 * 90;
 }

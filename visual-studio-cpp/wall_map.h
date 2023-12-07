@@ -21,7 +21,7 @@ private:
 
 private:
 	int* _get_frontier(int line, int column);
-	void _wallmap_showoneblank(int line, int column);
+	void _wallmap_showoneblock(int line, int column);
 	void _wallmap_showframe();
 
 public:
