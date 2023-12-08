@@ -32,8 +32,8 @@ int Bullet::_bullet_state_judge(int* center)
 		return 3;
 	if (getPixel(center[0] + RADIUS, center[1]) == BLACK)
 		return 4;
-	if (getPixel(center[0] + (int)((RADIUS + 2) * cos(_angle * PI / 180)),
-		center[1] + (int)((RADIUS + 2) * sin(_angle * PI / 180))) == BLACK)
+	if (getPixel(center[0] + (int)((RADIUS + 1) * cos(_angle * PI / 180)),
+		center[1] + (int)((RADIUS + 1) * sin(_angle * PI / 180))) == BLACK)
 		return 5;		//防止正好打到wallmap的corner(但是仍然判断不足，懒得再写了。。)
 	return 0;
 }

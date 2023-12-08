@@ -85,7 +85,7 @@ void SolidObject::_points_symmetric(POINT *points)
 	points[3].y = 2 * _center[1] - points[1].y;
 }
 
-
+/*
 int SolidObject::_judge_crash()
 {
 	POINT points[4];
@@ -113,8 +113,41 @@ int SolidObject::_judge_crash()
 
 	返回值，0：不是边界，1，边界在上面撞到，2，边界在下面撞到
 					3，边界在左面撞到，4，边界在下面撞到
-	*/
+	
 
+	return 0;
+}*/
+
+int SolidObject::_judge_crash(int *next_center)
+{
+	ACL_Color m;
+	POINT origin_points[4];
+	_points_symmetric(origin_points);
+	int process_center[2];//循环过程中心坐标
+	POINT process_point[4];//循环过程四个角
+	POINT next_points[4];
+	_points_symmetric(next_points);
+	int i, j;//建立循环
+
+	for (i = 0; i < _linear_v; ++i)
+	{
+		process_center[0] = _center[0] + (int)((next_center[0] - _center[0]) / _linear_v);
+		process_center[1] = _center[1] + (int)((next_center[1] - _center[1]) / _linear_v);
+		for (j = 0; j < 4; ++j)
+		{
+			process_point[j].x = origin_points[j].x + (int)((next_center[0] - _center[0]) / _linear_v);
+			process_point[j].y = origin_points[j].y + (int)((next_center[1] - _center[1]) / _linear_v);
+			m = getPixel(process_point[j].x, process_point[j].y);
+			if (m != WHITE)
+			{
+				_center[0] = process_center[0];//_assign_center
+				_center[1] = process_center[1];//第一次检测到撞墙的时候就是临界状态（之前的状态都是正常的情况下）
+				return 1;
+			}
+		}
+	}
+	_center[0] = next_center[0];
+	_center[1] = next_center[1];//中途没有撞墙，移动正常，传递位置
 	return 0;
 }
 
@@ -122,20 +155,16 @@ int SolidObject::_judge_crash()
 
 void SolidObject::move_for_per_time()
 {
-	if (!_judge_crash())
-	{
-		_center[0] += (int)(cos(_angle * PI / 180) * _linear_v);
-		_center[1] += (int)(sin(_angle * PI / 180) * _linear_v);
-	}
+	int next_center[2];
+	_for_move(next_center);
+	_judge_crash(next_center);
 }
 
 void SolidObject::move_back_per_time()
 {
-	if (!_judge_crash())
-	{
-		_center[0] -= (int)(cos(_angle * PI / 180) * _linear_v);
-		_center[1] -= (int)(sin(_angle * PI / 180) * _linear_v);
-	}
+	int next_center[2];
+	_back_move(next_center);
+	_judge_crash(next_center);
 }
 
 void SolidObject::rotate_CW_per_time()

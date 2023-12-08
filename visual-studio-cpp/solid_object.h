@@ -26,7 +26,7 @@ protected:
 	void _back_move(int* new_center);
 	POINT _point_coordinates();
 	void _points_symmetric(POINT* points);
-	int _judge_crash();
+	int _judge_crash(int *next_center);
 
 public:
 	SolidObject();
