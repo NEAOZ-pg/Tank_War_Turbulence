@@ -46,7 +46,7 @@ void Tank::tank_unshow()
 	setBrushColor(WHITE);
 	setBrushStyle(BRUSH_STYLE_SOLID);
 	POINT points[4];
-	_points_symmetric(points);
+	_points_symmetric(points, _center, _angle);
 	polygon(points, 4);
 	setBrushColor(WHITE);
 	polygon(_points_cannon(points), 4);
@@ -59,7 +59,7 @@ void Tank::tank_show()
 	setBrushColor(_color);
 	setBrushStyle(BRUSH_STYLE_SOLID);
 	POINT points[4];
-	_points_symmetric(points);
+	_points_symmetric(points, _center, _angle);
 	polygon(points, 4);
 	setBrushColor(RED);
 	polygon(_points_cannon(points), 4);

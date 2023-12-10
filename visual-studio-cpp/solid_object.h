@@ -24,9 +24,10 @@ protected:
 	void _assign_center(int* center1, const int* center2);
 	void _for_move(int* new_center);
 	void _back_move(int* new_center);
-	POINT _point_coordinates();
-	void _points_symmetric(POINT* points);
-	int _judge_crash(int *next_center);
+	POINT _point_coordinates(int* center, int angle);
+	void _points_symmetric(POINT* points, int* center, int angle);
+	int _judge_move_crash(int *next_center);
+	int _judge_rotate_crash(int next_angle);
 
 public:
 	SolidObject();

@@ -26,7 +26,7 @@ int SolidObject::get_angle()
 POINT* SolidObject::get_points()
 {
 	POINT* points = new POINT[4];
-	_points_symmetric(points);
+	_points_symmetric(points, _center, _angle);
 	return points;
 }
 
@@ -55,14 +55,14 @@ void SolidObject::_back_move(int* new_center)
   * @param  None
   * @retval 在画布坐标系下的坐标（x，y）
   */
-POINT SolidObject::_point_coordinates()
+POINT SolidObject::_point_coordinates(int* center, int angle)
 {
 	POINT coordiante =
 	{
-		_center[0] + (long)(_half_length * cos(_angle * PI / 180) 
-			+ _half_width * cos((_angle + 90) * PI / 180)),
-		_center[1] + (long)(_half_length * sin(_angle * PI / 180) 
-			+ _half_width * sin((_angle + 90) * PI / 180)),
+		center[0] + (long)(_half_length * cos(angle * PI / 180) 
+			+ _half_width * cos((angle + 90) * PI / 180)),
+		center[1] + (long)(_half_length * sin(angle * PI / 180) 
+			+ _half_width * sin((angle + 90) * PI / 180)),
 	};
 	return coordiante;
 }
@@ -71,18 +71,18 @@ POINT SolidObject::_point_coordinates()
   * @brief  根据右方上角的点坐标求出四角坐标
   * @param  右方上角的点坐标
   * @retval	points[4]{x,y} 在画布坐标系下的四角坐标
-  */
-void SolidObject::_points_symmetric(POINT *points)
+  */ 
+void SolidObject::_points_symmetric(POINT *points, int *center, int angle)
 {
-	POINT point = _point_coordinates();
+	POINT point = _point_coordinates(center, angle);
 	points[0].x = point.x;
 	points[0].y = point.y;
-	points[1].x = (long)(point.x - 2 * _half_length * cos(_angle * PI / 180));
-	points[1].y = (long)(point.y - 2 * _half_length * sin(_angle * PI / 180));
-	points[2].x = 2 * _center[0] - points[0].x;
-	points[2].y = 2 * _center[1] - points[0].y;
-	points[3].x = 2 * _center[0] - points[1].x;
-	points[3].y = 2 * _center[1] - points[1].y;
+	points[1].x = (long)(point.x - 2 * _half_length * cos(angle * PI / 180));
+	points[1].y = (long)(point.y - 2 * _half_length * sin(angle * PI / 180));
+	points[2].x = 2 * center[0] - points[0].x;
+	points[2].y = 2 * center[1] - points[0].y;
+	points[3].x = 2 * center[0] - points[1].x;
+	points[3].y = 2 * center[1] - points[1].y;
 }
 
 /*
@@ -118,30 +118,46 @@ int SolidObject::_judge_crash()
 	return 0;
 }*/
 
-int SolidObject::_judge_crash(int *next_center)
+int SolidObject::_judge_move_crash(int *next_center)
 {
 	ACL_Color m;
 	POINT origin_points[4];
-	_points_symmetric(origin_points);
+	_points_symmetric(origin_points, _center, _angle);
 	int process_center[2];//循环过程中心坐标
 	POINT process_point[4];//循环过程四个角
 	POINT next_points[4];
-	_points_symmetric(next_points);
+	_points_symmetric(next_points, next_center, _angle);
 	int i, j;//建立循环
-
-	for (i = 0; i < _linear_v; ++i)
+	int coefficient, slope;//斜率
+	if (next_center[0] != _center[0])
 	{
-		process_center[0] = _center[0] + (int)((next_center[0] - _center[0]) / _linear_v);
-		process_center[1] = _center[1] + (int)((next_center[1] - _center[1]) / _linear_v);
+		slope = 1;
+		coefficient = (next_center[1] - _center[1]) / (next_center[0] - _center[0]);
+	}
+	else {
+		slope = 0;
+		coefficient = 1;
+	}
+	process_center[0] = _center[0];
+	process_center[1] = _center[1];
+	for (j = 0; j < 4; ++j)
+	{
+		process_point[j].x = origin_points[j].x;
+		process_point[j].y = origin_points[j].y;
+	}//先把过程变量与小车初始状态对齐
+	for (i = 0; i <= (int)((next_center[0] - _center[0])); ++i)
+	{
+		process_center[0] = _center[0] + slope;
+		process_center[1] = _center[1] + (int)(coefficient);
 		for (j = 0; j < 4; ++j)
 		{
-			process_point[j].x = origin_points[j].x + (int)((next_center[0] - _center[0]) / _linear_v);
-			process_point[j].y = origin_points[j].y + (int)((next_center[1] - _center[1]) / _linear_v);
+			process_point[j].x = origin_points[j].x + slope;
+			process_point[j].y = origin_points[j].y + (int)(coefficient);
 			m = getPixel(process_point[j].x, process_point[j].y);
 			if (m != WHITE)
 			{
-				_center[0] = process_center[0];//_assign_center
-				_center[1] = process_center[1];//第一次检测到撞墙的时候就是临界状态（之前的状态都是正常的情况下）
+				_center[0] = process_center[0] - 1;//_assign_center
+				_center[1] = process_center[1] - (int)(coefficient);//第一次检测到撞墙的时候就是临界状态（之前的状态都是正常的情况下）
 				return 1;
 			}
 		}
@@ -151,32 +167,82 @@ int SolidObject::_judge_crash(int *next_center)
 	return 0;
 }
 
+int SolidObject::_judge_rotate_crash(int next_angle)
+{
+	//_angle,_center,origin_points已知
+	ACL_Color m;
+	POINT origin_points[4];
+	_points_symmetric(origin_points, _center, _angle);
+	POINT process_point[4];//过程中相对坐标原点的坐标
+	POINT relative_point[4];//过程中相对中心的坐标
+	POINT next_points[4];
+	_points_symmetric(next_points, _center, next_angle);
+	int i, j, k;//循环控制变量
+	const float unit = 3.14 / 18;//最小旋转单位
+	int time = (int)((next_angle - _angle) / 10);
+	for (j = 0; j < 4; ++j)
+	{
+		process_point[j].x = origin_points[j].x;
+		process_point[j].y = origin_points[j].y;
+		relative_point[j].x = process_point[j].x - _center[0];
+		relative_point[j].y = process_point[j].y - _center[1];
+	}//先把过程变量与小车初始状态对齐
+	for (i = 0; i < time; ++i)
+	{
+		for (j = 0; j < 4; ++j)
+		{
+			relative_point[j].x = (int)(relative_point[j].x * cos(unit) - relative_point[j].y * sin(unit));
+			relative_point[j].y = (int)(relative_point[j].x * sin(unit) + relative_point[j].y * cos(unit));
+			m = getPixel(relative_point[j].x + origin_points[j].x, relative_point[j].y + origin_points[j].y);
+			if (m != WHITE)
+			{
+				for (k = 0; k < 4; ++k)
+				{
+					origin_points[k].x = relative_point[j].x + origin_points[j].x;
+					origin_points[k].y = relative_point[j].y + origin_points[j].y;
+					return 1;
+				}
+			}
+		}
+	}
+	for (j = 0; j < 4; ++j)
+	{
+		origin_points[j].x = next_points[j].x;
+		origin_points[j].y = next_points[j].y;
+	}
+	return 0;
+}
+
 //public
 
 void SolidObject::move_for_per_time()
 {
+	//_for_move(_center);
+
 	int next_center[2];
 	_for_move(next_center);
-	_judge_crash(next_center);
+	_judge_move_crash(next_center);
 }
 
 void SolidObject::move_back_per_time()
 {
+	//_back_move(_center);
+
 	int next_center[2];
 	_back_move(next_center);
-	_judge_crash(next_center);
+	_judge_move_crash(next_center);
 }
 
 void SolidObject::rotate_CW_per_time()
 {
-	_angle = (_angle + _angular_v) % 360;
-	//判断！
+	_angle += _angular_v;
+	_judge_rotate_crash(_angle + _angular_v);
 }
 
 void SolidObject::rotate_CCW_per_time()
 {
-	_angle = (_angle - _angular_v) % 360;
-	//判断！
+	_angle -= _angular_v;
+	_judge_rotate_crash(_angle - _angular_v);
 }
 
 /**
