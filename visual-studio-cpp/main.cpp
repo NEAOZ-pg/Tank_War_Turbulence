@@ -12,6 +12,7 @@
 #define INTERFACE_GAME_PLAY 1
 #define BULLET_INTERVAL 10
 
+
 #define TIMEID_GAME 0
 
 //UP DOWN LEFT RIGHT
@@ -105,11 +106,11 @@ void timeevent(int timeID)
 			WallMap map_i(4, 3, testmap);
 			map_test = map_i;
 			map_test.wallmap_show();
-			Tank tank_1(1, GREEN, random_coordinate(map_test), random_angle());
+			Tank tank_1(1, TANK1_COLOR, random_coordinate(map_test), random_angle());
 			tank1 = tank_1;
 			tank1.tank_show();
 
-			Tank tank_2(2, BLUE, random_coordinate(map_test), random_angle());
+			Tank tank_2(2, TANK2_COLOR, random_coordinate(map_test), random_angle());
 			tank2 = tank_2;
 			tank2.tank_show();
 
@@ -235,18 +236,46 @@ void timeevent(int timeID)
 			}
 		}
 
-		beginPaint();
-		if (tank1_bullet0.is_exist())	tank1_bullet0.pre_time();
-		if (tank1_bullet1.is_exist())	tank1_bullet1.pre_time();
-		if (tank1_bullet2.is_exist())	tank1_bullet2.pre_time();
-		if (tank1_bullet3.is_exist())	tank1_bullet3.pre_time();
-		if (tank1_bullet4.is_exist())	tank1_bullet4.pre_time();
+		int destory[10];
+		memset(destory, 0, sizeof(destory));
 
-		if (tank2_bullet0.is_exist())	tank2_bullet0.pre_time();
-		if (tank2_bullet1.is_exist())	tank2_bullet1.pre_time();
-		if (tank2_bullet2.is_exist())	tank2_bullet2.pre_time();
-		if (tank2_bullet3.is_exist())	tank2_bullet3.pre_time();
-		if (tank2_bullet4.is_exist())	tank2_bullet4.pre_time();
+		beginPaint();
+		if (tank1_bullet0.is_exist())	destory[0] = tank1_bullet0.pre_time();
+		if (tank1_bullet1.is_exist())	destory[1] = tank1_bullet1.pre_time();
+		if (tank1_bullet2.is_exist())	destory[2] = tank1_bullet2.pre_time();
+		if (tank1_bullet3.is_exist())	destory[3] = tank1_bullet3.pre_time();
+		if (tank1_bullet4.is_exist())	destory[4] = tank1_bullet4.pre_time();
+
+		if (tank2_bullet0.is_exist())	destory[5] = tank2_bullet0.pre_time();
+		if (tank2_bullet1.is_exist())	destory[6] = tank2_bullet1.pre_time();
+		if (tank2_bullet2.is_exist())	destory[7] = tank2_bullet2.pre_time();
+		if (tank2_bullet3.is_exist())	destory[8] = tank2_bullet3.pre_time();
+		if (tank2_bullet4.is_exist())	destory[9] = tank2_bullet4.pre_time();
+
+		int i = 0;
+		for (i = 0; i < 10; ++i)
+		{
+			if (destory[i] == -1)
+				tank1.tank_unshow();
+			else if (destory[i] == -2)
+				tank2.tank_unshow();
+		}
+		map_test.wallmap_show();
+
+		tank1_bullet0.anti_bug();
+		tank1_bullet1.anti_bug();
+		tank1_bullet2.anti_bug();
+		tank1_bullet3.anti_bug();
+		tank1_bullet4.anti_bug();
+		
+		tank2_bullet0.anti_bug();
+		tank2_bullet1.anti_bug();
+		tank2_bullet2.anti_bug();
+		tank2_bullet3.anti_bug();
+		tank2_bullet4.anti_bug();
+		
+		map_test.wallmap_show();
+
 		endPaint();
 
 		if (tank1_bullet_interval)	--tank1_bullet_interval;

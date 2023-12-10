@@ -5,6 +5,7 @@
 
 #include "solid_object.h"
 #include "acllib.h"
+#include "tank.h"
 
 class Bullet :public SolidObject
 {
@@ -16,13 +17,15 @@ private:
 	void _bullet_unshow();
 	void _bullet_show();
 	int _bullet_state_judge(int* center);
-	void _bullet_move_judge();
+	int _bullet_judge(int* pre_center, int* next_center);
+	void _bullet_move(int judge, int* pre_center, int* next_center);
 
 public:
 	Bullet(int user);
 	void init(int orient, POINT* tank_points);
 	bool is_exist();
-	void pre_time();
+	int pre_time();
+	void anti_bug();
 };
 
 #endif

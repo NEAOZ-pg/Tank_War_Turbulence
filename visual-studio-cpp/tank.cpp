@@ -7,6 +7,7 @@
 #define TANK_LINEAR_V	9
 #define TANK_ANGULAR_V	10
 
+
 Tank::Tank()
 {
 }
@@ -24,13 +25,15 @@ Tank::~Tank()
 
 POINT* Tank::_points_cannon(POINT* points)
 {
-	POINT cannon[3];
+	POINT cannon[4];
 	cannon[0].x = (points[0].x * 2 + points[3].x) / 3;
 	cannon[0].y = (points[0].y * 2 + points[3].y) / 3;
 	cannon[1].x = (points[3].x * 2 + points[0].x) / 3;
 	cannon[1].y = (points[3].y * 2 + points[0].y) / 3;
-	cannon[2].x = _center[0];
-	cannon[2].y = _center[1];
+	cannon[2].x = _center[0] + (cannon[1].x - cannon[0].x) / 2;
+	cannon[2].y = _center[1] + (cannon[1].y - cannon[0].y) / 2;
+	cannon[3].x = _center[0] + (cannon[0].x - cannon[1].x) / 2;
+	cannon[3].y = _center[1] + (cannon[0].y - cannon[1].y) / 2;
 	return cannon;
 }
 
@@ -45,19 +48,21 @@ void Tank::tank_unshow()
 	POINT points[4];
 	_points_symmetric(points);
 	polygon(points, 4);
+	setBrushColor(WHITE);
+	polygon(_points_cannon(points), 4);
 }
 
 void Tank::tank_show()
 {
-	setPenColor(_color);
+	setPenColor(EMPTY);
 	setPenWidth(0);
 	setBrushColor(_color);
 	setBrushStyle(BRUSH_STYLE_SOLID);
 	POINT points[4];
 	_points_symmetric(points);
 	polygon(points, 4);
-	setBrushColor(WHITE);
-	polygon(_points_cannon(points), 3);
+	setBrushColor(RED);
+	polygon(_points_cannon(points), 4);
 }
 
 /**

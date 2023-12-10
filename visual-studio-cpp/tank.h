@@ -7,6 +7,9 @@
 #include "acllib.h"
 #include "wall_map.h"
 
+#define TANK1_COLOR GREEN
+#define TANK2_COLOR BLUE
+
 class Tank:public SolidObject
 {
 private:

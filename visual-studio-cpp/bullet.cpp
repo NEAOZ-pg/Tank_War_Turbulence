@@ -2,7 +2,7 @@
 
 #define EXISTENCE_TIME 300	//  实际时长未知（定时器精度较差），视程序而定
 #define RADIUS 8
-#define BULLET_SPEED 5
+#define BULLET_SPEED 6
 
 void Bullet::_bullet_unshow()
 {
@@ -24,6 +24,18 @@ void Bullet::_bullet_show()
 
 int Bullet::_bullet_state_judge(int* center)
 {
+	int angle = 0;
+	ACL_Color color;
+	for (angle = 0; angle < 360; angle += 5)
+	{
+		color = getPixel(center[0] + (int)((RADIUS)*cos(angle * PI / 180)),
+			center[1] + (int)((RADIUS)*sin(angle * PI / 180)));
+		if (color == TANK1_COLOR)
+			return -1;
+		if (color == TANK2_COLOR)
+			return -2;
+	}
+
 	if (getPixel(center[0], center[1] - RADIUS) == BLACK)
 		return 1;
 	if (getPixel(center[0], center[1] + RADIUS) == BLACK)
@@ -32,18 +44,23 @@ int Bullet::_bullet_state_judge(int* center)
 		return 3;
 	if (getPixel(center[0] + RADIUS, center[1]) == BLACK)
 		return 4;
-	if (getPixel(center[0] + (int)((RADIUS + 1) * cos(_angle * PI / 180)),
-		center[1] + (int)((RADIUS + 1) * sin(_angle * PI / 180))) == BLACK)
-		return 5;		//防止正好打到wallmap的corner(但是仍然判断不足，懒得再写了。。)
+
+	for (angle = 0; angle < 360; angle += 5)
+	{
+		if (getPixel(center[0] + (int)((RADIUS - 1) * cos(angle * PI / 180)),
+			center[1] + (int)((RADIUS - 1) * sin(angle * PI / 180))) == BLACK)
+			return 5;		//防止正好打到wallmap的corner(但是仍然判断不足，懒得再写了。。)
+	}
+	
 	return 0;
 }
 
 //just judege the map
-void Bullet::_bullet_move_judge()	//0: NONE	1:UP	2:down		3:left		4:right
+int Bullet::_bullet_judge(int* pre_center, int* next_center)	//0: NONE	1:UP	2:down		3:left		4:right
 {
-	int next_center[2];
+	memset(pre_center, 0, sizeof(pre_center));
+	memset(next_center, 0, sizeof(next_center));
 	_for_move(next_center);
-	int pre_center[2];
 	_assign_center(pre_center, _center);
 	int center[2];
 	int judge = 0, i = 0;
@@ -58,6 +75,11 @@ void Bullet::_bullet_move_judge()	//0: NONE	1:UP	2:down		3:left		4:right
 		_assign_center(pre_center, center);
 	}
 
+	return judge;
+}
+
+void Bullet::_bullet_move(int judge, int* pre_center, int* next_center)
+{
 	if (judge == 0)
 	{
 		_assign_center(_center, next_center);
@@ -92,8 +114,6 @@ void Bullet::_bullet_move_judge()	//0: NONE	1:UP	2:down		3:left		4:right
 		_center[0] = 2 * pre_center[0] - next_center[0];
 		_center[1] = 2 * pre_center[1] - next_center[1];
 	}
-
-
 }
 
 Bullet::Bullet(int user):
@@ -108,8 +128,8 @@ void Bullet::init(int orient, POINT* tank_points)
 	_survive_time = EXISTENCE_TIME;
 	_angle = orient;
 
-	_center[0] = (tank_points[0].x + tank_points[3].x) / 2;
-	_center[1] = (tank_points[0].y + tank_points[3].y) / 2;
+	_center[0] = (tank_points[0].x + tank_points[3].x) / 2 + (int)((RADIUS + 1.5) * cos(_angle * PI / 180));
+	_center[1] = (tank_points[0].y + tank_points[3].y) / 2 + (int)((RADIUS + 1.5) * sin(_angle * PI / 180));
 }
 
 bool Bullet::is_exist()
@@ -117,16 +137,33 @@ bool Bullet::is_exist()
 	return _is_use;
 }
 
-void Bullet::pre_time()
+int Bullet::pre_time()
 {
 	_bullet_unshow();
+	int pre_center[2];
+	int next_center[2];
+	int judge = _bullet_judge(pre_center, next_center);
+	if (judge < 0)
+	{
+		_is_use = 0;
+		return judge;
+	}
 	if (--_survive_time == 0)
 	{
 		_is_use = 0;
-		return;
+		return 0;
 	}
-	_bullet_move_judge();
-
+	_bullet_move(judge, pre_center, next_center);
 	_bullet_show();
+	return 0;
+}
 
+void Bullet::anti_bug()
+{
+	if (getPixel(_center[0], _center[1]) == BLACK)
+	{
+		_bullet_unshow();
+		_for_move(_center);
+		_for_move(_center);
+	}
 }
