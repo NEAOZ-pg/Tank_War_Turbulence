@@ -179,7 +179,7 @@ int SolidObject::_judge_rotate_crash(int next_angle)
 	_points_symmetric(next_points, _center, next_angle);
 	int i, j, k;//循环控制变量
 	const float unit = 3.14 / 18;//最小旋转单位
-	int time = (int)((next_angle - _angle) / 10);
+	int time = (next_angle - _angle) / 10;		//_angular_v
 	for (j = 0; j < 4; ++j)
 	{
 		process_point[j].x = origin_points[j].x;
