@@ -44,13 +44,6 @@ int Bullet::_bullet_state_judge(int* center)
 		return 3;
 	if (getPixel(center[0] + RADIUS, center[1]) == BLACK)
 		return 4;
-
-	for (angle = 0; angle < 360; angle += 5)
-	{
-		if (getPixel(center[0] + (int)((RADIUS - 1) * cos(angle * PI / 180)),
-			center[1] + (int)((RADIUS - 1) * sin(angle * PI / 180))) == BLACK)
-			return 5;		//防止正好打到wallmap的corner(但是仍然判断不足，懒得再写了。。)
-	}
 	
 	return 0;
 }
@@ -107,12 +100,6 @@ void Bullet::_bullet_move(int judge, int* pre_center, int* next_center)
 		_angle = (540 - _angle) % 360;
 		_center[0] = 2 * pre_center[0] - next_center[0];
 		_center[1] = next_center[1];
-	}
-	else if (judge == 5)
-	{
-		_angle = (_angle + 180) % 360;
-		_center[0] = 2 * pre_center[0] - next_center[0];
-		_center[1] = 2 * pre_center[1] - next_center[1];
 	}
 }
 
