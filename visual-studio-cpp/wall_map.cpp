@@ -1,5 +1,5 @@
 #include "wall_map.h"
-
+#include "stdlib.h"
 
 WallMap::WallMap()
 {
@@ -14,7 +14,7 @@ WallMap::WallMap(int length, int width, int*** map) :
 	_length(length), _width(width)
 {
 	_axis_x = (WINDOW_LENGTH - _length * UNIT_LENGTH) / 2;
-	_axis_y = 100;//可能需要改变
+	_axis_y = 50;//可能需要改变
 
 	wallmap = new int** [_width];
 	int line = 0, column = 0, i = 0;
@@ -208,3 +208,16 @@ void WallMap::wallmap_show()
 	
 	_wallmap_showframe();
 }
+
+void windows_clear()
+{
+	setBrushColor(WHITE);
+	setBrushStyle(BRUSH_STYLE_SOLID);
+
+	setPenColor(WHITE);
+	setPenWidth(0);
+	setPenStyle(PEN_STYLE_SOLID);
+
+	rectangle(0, 0, WINDOW_LENGTH, WINDOW_WIDTH);
+}
+

@@ -40,4 +40,6 @@ public:
 
 };
 
+void windows_clear();
+
 #endif

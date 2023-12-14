@@ -12,6 +12,9 @@ extern int key_RIGHT;
 extern int key_ENTER;
 extern int key_SPACE;
 
+extern int Key_User1_ENABLE;
+extern int Key_User2_ENABLE;
+
 void keyevent(int key, int event);
 
 #endif

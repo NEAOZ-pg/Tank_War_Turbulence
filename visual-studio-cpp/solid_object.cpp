@@ -117,10 +117,9 @@ int SolidObject::_judge_crash()
 
 	return 0;
 }*/
-
-int SolidObject::_judge_move_crash(int *next_center)
+int SolidObject::_judge_move_crash(int* next_center)
 {
-	ACL_Color m;
+	ACL_Color target;
 	POINT origin_points[4];
 	_points_symmetric(origin_points, _center, _angle);
 	int process_center[2];//循环过程中心坐标
@@ -128,16 +127,25 @@ int SolidObject::_judge_move_crash(int *next_center)
 	POINT next_points[4];
 	_points_symmetric(next_points, next_center, _angle);
 	int i, j;//建立循环
-	int coefficient, slope;//斜率
+	float coefficient;
+	int slope;//斜率
+	int sign;//正负
+	if (next_center[0] >= _center[0])
+		sign = 1;
+	else sign = -1;
 	if (next_center[0] != _center[0])
 	{
-		slope = 1;
 		coefficient = (next_center[1] - _center[1]) / (next_center[0] - _center[0]);
+		if (next_center[0] > _center[0])
+			slope = 1;
+		else slope = -1;
 	}
 	else {
 		slope = 0;
-		coefficient = 1;
-	}
+		if (next_center[1] > _center[1])
+			coefficient = 1;
+		else coefficient = -1;
+	}//确定斜率
 	process_center[0] = _center[0];
 	process_center[1] = _center[1];
 	for (j = 0; j < 4; ++j)
@@ -145,19 +153,19 @@ int SolidObject::_judge_move_crash(int *next_center)
 		process_point[j].x = origin_points[j].x;
 		process_point[j].y = origin_points[j].y;
 	}//先把过程变量与小车初始状态对齐
-	for (i = 0; i <= (int)((next_center[0] - _center[0])); ++i)
+	for (i = 0; i <= abs(next_center[0] - _center[0]); ++i)
 	{
-		process_center[0] = _center[0] + slope;
-		process_center[1] = _center[1] + (int)(coefficient);
+		process_center[0] = process_center[0] + slope;
+		process_center[1] = process_center[1] + sign * (int)(coefficient);
 		for (j = 0; j < 4; ++j)
 		{
-			process_point[j].x = origin_points[j].x + slope;
-			process_point[j].y = origin_points[j].y + (int)(coefficient);
-			m = getPixel(process_point[j].x, process_point[j].y);
-			if (m != WHITE)
+			process_point[j].x = process_point[j].x + slope;
+			process_point[j].y = process_point[j].y + sign * (int)(coefficient);
+			target = getPixel(process_point[j].x, process_point[j].y);
+			if ((target == BLACK) || (target == BLUE) || (target == GREEN))
 			{
-				_center[0] = process_center[0] - 1;//_assign_center
-				_center[1] = process_center[1] - (int)(coefficient);//第一次检测到撞墙的时候就是临界状态（之前的状态都是正常的情况下）
+				_center[0] = process_center[0] - slope;
+				_center[1] = process_center[1] - sign * (int)(coefficient);
 				return 1;
 			}
 		}
@@ -169,47 +177,69 @@ int SolidObject::_judge_move_crash(int *next_center)
 
 int SolidObject::_judge_rotate_crash(int next_angle)
 {
+	//_angular_v=next_angle-_angle;
+	//这个函数只模拟旋转一次十度的情况
 	//_angle,_center,origin_points已知
-	ACL_Color m;
+	ACL_Color target;
 	POINT origin_points[4];
 	_points_symmetric(origin_points, _center, _angle);
-	POINT process_point[4];//过程中相对坐标原点的坐标
-	POINT relative_point[4];//过程中相对中心的坐标
+	POINT process_points[5];//用于取点判断
+	POINT judge_points[5];//用于判断边的坐标
 	POINT next_points[4];
 	_points_symmetric(next_points, _center, next_angle);
-	int i, j, k;//循环控制变量
-	const float unit = 3.14 / 18;//最小旋转单位
-	int time = (next_angle - _angle) / 10;		//_angular_v
-	for (j = 0; j < 4; ++j)
+	int sign[4];//取点方向
+	int coefficient[4], slope[4];//y方向改变量，x方向改变量；
+	int i, j;//循环控制变量
+	for (i = 0; i < 5; ++i)
 	{
-		process_point[j].x = origin_points[j].x;
-		process_point[j].y = origin_points[j].y;
-		relative_point[j].x = process_point[j].x - _center[0];
-		relative_point[j].y = process_point[j].y - _center[1];
-	}//先把过程变量与小车初始状态对齐
-	for (i = 0; i < time; ++i)
-	{
-		for (j = 0; j < 4; ++j)
+		if (i == 4)
 		{
-			relative_point[j].x = (int)(relative_point[j].x * cos(unit) - relative_point[j].y * sin(unit));
-			relative_point[j].y = (int)(relative_point[j].x * sin(unit) + relative_point[j].y * cos(unit));
-			m = getPixel(relative_point[j].x + origin_points[j].x, relative_point[j].y + origin_points[j].y);
-			if (m != WHITE)
-			{
-				for (k = 0; k < 4; ++k)
-				{
-					origin_points[k].x = relative_point[j].x + origin_points[j].x;
-					origin_points[k].y = relative_point[j].y + origin_points[j].y;
-					return 1;
-				}
-			}
+			judge_points[i].x = next_points[0].x;
+			judge_points[i].y = next_points[0].y;
+			break;
+		}
+		judge_points[i].x = next_points[i].x;
+		judge_points[i].y = next_points[i].y;
+	}
+	//
+	for (i = 0; i < 4; ++i)
+	{
+		if (judge_points[i + 1].x >= judge_points[i].x)
+			sign[i] = 1;
+		else sign[i] = -1;
+		if (next_points[i].x != next_points[i + 1].x)
+		{
+			coefficient[i] = (next_points[i + 1].y - next_points[i].y) / (next_points[i + 1].x - next_points[i].x);
+			if (next_points[i + 1].x > next_points[i].x)
+				slope[i] = 1;
+			else slope[i] = -1;
+		}
+		else {
+			slope[i] = 0;
+			if (next_points[i + 1].y > next_points[i].y)
+				coefficient[i] = 1;
+			else coefficient[i] = -1;
+		}//确定斜率
+	}
+
+	for (j = 0; j < 5; ++j)
+	{
+		process_points[j].x = judge_points[j].x;
+		process_points[j].y = judge_points[j].y;
+	}//先把过程变量与小车初始状态对齐
+
+	for (i = 0; i <= 4; ++i)
+	{
+		for (j = 0; j <= abs(process_points[i + 1].x - process_points[i].x); ++j)
+		{
+			process_points[i].x = process_points[i].x + slope[i];
+			process_points[i].y = process_points[i].y + sign[i] * (int)(coefficient[i]);
+			target = getPixel(process_points[i].x, process_points[i].y);
+			if ((target == BLACK) || (target == BLUE) || (target == GREEN))
+				return 1;
 		}
 	}
-	for (j = 0; j < 4; ++j)
-	{
-		origin_points[j].x = next_points[j].x;
-		origin_points[j].y = next_points[j].y;
-	}
+	_angle = next_angle;
 	return 0;
 }
 
@@ -236,13 +266,13 @@ void SolidObject::move_back_per_time()
 void SolidObject::rotate_CW_per_time()
 {
 	_angle += _angular_v;
-	_judge_rotate_crash(_angle + _angular_v);
+	//_judge_rotate_crash(_angle + _angular_v);
 }
 
 void SolidObject::rotate_CCW_per_time()
 {
 	_angle -= _angular_v;
-	_judge_rotate_crash(_angle - _angular_v);
+	//_judge_rotate_crash(_angle - _angular_v);
 }
 
 /**

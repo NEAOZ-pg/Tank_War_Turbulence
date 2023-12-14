@@ -48,6 +48,9 @@
     <ClCompile Include="bullet.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="map_create.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\acllib.h">
@@ -69,6 +72,9 @@
       <Filter>utility files</Filter>
     </ClInclude>
     <ClInclude Include="bullet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="map_create.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

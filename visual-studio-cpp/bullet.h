@@ -23,6 +23,7 @@ private:
 public:
 	Bullet(int user);
 	void init(int orient, POINT* tank_points);
+	void clear();
 	bool is_exist();
 	int pre_time();
 	void anti_bug();

@@ -36,13 +36,13 @@ int Bullet::_bullet_state_judge(int* center)
 			return -2;
 	}
 
-	if (getPixel(center[0], center[1] - RADIUS) == BLACK)
+	if (getPixel(center[0], center[1] - RADIUS + 1) == BLACK)
 		return 1;
-	if (getPixel(center[0], center[1] + RADIUS) == BLACK)
+	if (getPixel(center[0], center[1] + RADIUS - 1) == BLACK)
 		return 2;
-	if (getPixel(center[0] - RADIUS, center[1]) == BLACK)
+	if (getPixel(center[0] - RADIUS + 1, center[1]) == BLACK)
 		return 3;
-	if (getPixel(center[0] + RADIUS, center[1]) == BLACK)
+	if (getPixel(center[0] + RADIUS - 1, center[1]) == BLACK)
 		return 4;
 	
 	return 0;
@@ -119,6 +119,13 @@ void Bullet::init(int orient, POINT* tank_points)
 	_center[1] = (tank_points[0].y + tank_points[3].y) / 2 + (int)((RADIUS + 1.5) * sin(_angle * PI / 180));
 }
 
+void Bullet::clear()
+{
+	_is_use = 0;
+	_survive_time = 0;
+	_bullet_unshow();
+}
+
 bool Bullet::is_exist()
 {
 	return _is_use;
@@ -147,7 +154,7 @@ int Bullet::pre_time()
 
 void Bullet::anti_bug()
 {
-	if (getPixel(_center[0], _center[1]) == BLACK)
+	if (getPixel(_center[0], _center[1]) == BLACK && _survive_time > 295)
 	{
 		_bullet_unshow();
 		_for_move(_center);

@@ -1,7 +1,7 @@
 #include <windows.h>
 #include <time.h>
 #include <iostream>
-#include "global_param.h"
+#include "map_create.h"
 #include "key_interrupt.h"
 #include "acllib.h"
 #include "wall_map.h"
@@ -11,47 +11,9 @@
 #define INTERFACE_GAME_INIT 0
 #define INTERFACE_GAME_PLAY 1
 #define BULLET_INTERVAL 10
-
+#define TANK_DESTORY_INTERVAL 150
 
 #define TIMEID_GAME 0
-
-//UP DOWN LEFT RIGHT
-int map1[3][3][4] = {
-	{{1,1,1,0},{1,0,0,1},{1,0,1,1},},
-	{{1,0,1,1},{0,1,1,0},{0,0,0,1},},
-	{{0,1,1,0},{1,1,0,0},{0,1,0,1},},
-};
-
-int map2[3][4][4] = {
-	{{1,1,1,0},{1,0,0,1},{1,0,1,0},{1,1,0,1},},
-	{{1,0,1,1},{0,1,1,0},{0,0,0,1},{1,0,1,1},},
-	{{0,1,1,0},{1,1,0,0},{0,1,0,0},{0,1,0,1},},
-};
-
-/*
-添加新的地图
-
-*/
-
-int*** testmap;
-void map_init(int length,int width)
-{
-	testmap = (int***)malloc(sizeof(int**) * width);
-	int line = 0, column = 0, i = 0;
-	for (line = 0; line < width; line++)
-	{
-		testmap[line] = (int**)malloc(sizeof(int*) * length);
-		for (column = 0; column < length; column++)
-		{
-			testmap[line][column] = (int*)malloc(sizeof(int) * 4);
-			for (i = 0; i < 4; i++)
-			{
-				testmap[line][column][i] = map2[line][column][i];
-				//更改map2为map1即可获得map1的地图
-			}
-		}
-	}
-}
 
 void timeevent(int timeID);
 
@@ -72,6 +34,7 @@ Bullet tank2_bullet3(2);
 Bullet tank2_bullet4(2);
 int tank1_bullet_interval;
 int tank2_bullet_interval;
+int tank_destory_interval;
 
 int Setup()		//	
 {
@@ -82,15 +45,12 @@ int Setup()		//
 	至于界面的跳转，暂时通过	手动更改上面的一个函数，然后再次编译运行		来实现不同菜单的“”硬切换“”
 	先把这个做出来，剩余的再说
 	*/
-	srand((unsigned int)time(0));
+	srand(time(NULL));
 	initWindow("Test", 200, 50, WINDOW_LENGTH, WINDOW_WIDTH);
 	initConsole();
 	registerKeyboardEvent(keyevent);
 	registerTimerEvent(timeevent);
 	startTimer(0, 20);
-
-	
-	
 	return 0;
 }
 
@@ -100,12 +60,18 @@ void timeevent(int timeID)
 	{
 		if (interface_state == INTERFACE_GAME_INIT)
 		{
-			beginPaint();
+			tank_destory_interval = -1;
 
-			map_init(4, 3);
-			WallMap map_i(4, 3, testmap);
-			map_test = map_i;
+			beginPaint();
+			
+			windows_clear();
+
+			int length = 0, width = 0;
+			testmap = map_creating(&length, &width);
+			WallMap map_init(length, width, testmap);
+			map_test = map_init;
 			map_test.wallmap_show();
+			map_free(testmap, length, width);
 			Tank tank_1(1, TANK1_COLOR, random_coordinate(map_test), random_angle());
 			tank1 = tank_1;
 			tank1.tank_show();
@@ -234,51 +200,89 @@ void timeevent(int timeID)
 
 				tank2_bullet_interval = BULLET_INTERVAL;
 			}
+
+			int destory[10];
+			memset(destory, 0, sizeof(destory));
+
+			beginPaint();
+			if (tank1_bullet0.is_exist())	destory[0] = tank1_bullet0.pre_time();
+			if (tank1_bullet1.is_exist())	destory[1] = tank1_bullet1.pre_time();
+			if (tank1_bullet2.is_exist())	destory[2] = tank1_bullet2.pre_time();
+			if (tank1_bullet3.is_exist())	destory[3] = tank1_bullet3.pre_time();
+			if (tank1_bullet4.is_exist())	destory[4] = tank1_bullet4.pre_time();
+
+			if (tank2_bullet0.is_exist())	destory[5] = tank2_bullet0.pre_time();
+			if (tank2_bullet1.is_exist())	destory[6] = tank2_bullet1.pre_time();
+			if (tank2_bullet2.is_exist())	destory[7] = tank2_bullet2.pre_time();
+			if (tank2_bullet3.is_exist())	destory[8] = tank2_bullet3.pre_time();
+			if (tank2_bullet4.is_exist())	destory[9] = tank2_bullet4.pre_time();
+
+			int i = 0;
+			for (i = 0; i < 10; ++i)
+			{
+				if (destory[i] == -1)
+				{
+					tank1.tank_unshow();
+					Key_User1_ENABLE = 0;
+					key_A = 0;
+					key_D = 0;
+					key_W = 0;
+					key_S = 0;
+					key_SPACE = 0;
+					if (tank_destory_interval == -1)
+						tank_destory_interval = TANK_DESTORY_INTERVAL;
+				}
+				else if (destory[i] == -2)
+				{
+					tank2.tank_unshow();
+					Key_User2_ENABLE = 0;
+					key_LEFT = 0;
+					key_RIGHT = 0;
+					key_UP = 0;
+					key_DOWN = 0;
+					key_ENTER = 0;
+					if (tank_destory_interval == -1)
+						tank_destory_interval = TANK_DESTORY_INTERVAL;
+				}
+
+			}
+			map_test.wallmap_show();
+
+			tank1_bullet0.anti_bug();
+			tank1_bullet1.anti_bug();
+			tank1_bullet2.anti_bug();
+			tank1_bullet3.anti_bug();
+			tank1_bullet4.anti_bug();
+
+			tank2_bullet0.anti_bug();
+			tank2_bullet1.anti_bug();
+			tank2_bullet2.anti_bug();
+			tank2_bullet3.anti_bug();
+			tank2_bullet4.anti_bug();
+
+			map_test.wallmap_show();
+
+			if (tank1_bullet_interval)	--tank1_bullet_interval;
+			if (tank2_bullet_interval)	--tank2_bullet_interval;
+			if (tank_destory_interval > 0)	--tank_destory_interval;
+			else if (tank_destory_interval == 0)
+			{
+				Key_User1_ENABLE = 1;
+				Key_User1_ENABLE = 1;
+				interface_state = INTERFACE_GAME_INIT;
+				tank1_bullet0.clear();
+				tank1_bullet1.clear();
+				tank1_bullet2.clear();
+				tank1_bullet3.clear();
+				tank1_bullet4.clear();	  
+				tank2_bullet0.clear();
+				tank2_bullet1.clear();
+				tank2_bullet2.clear();
+				tank2_bullet3.clear();
+				tank2_bullet4.clear();
+			}
+
+			endPaint();
 		}
-
-		int destory[10];
-		memset(destory, 0, sizeof(destory));
-
-		beginPaint();
-		if (tank1_bullet0.is_exist())	destory[0] = tank1_bullet0.pre_time();
-		if (tank1_bullet1.is_exist())	destory[1] = tank1_bullet1.pre_time();
-		if (tank1_bullet2.is_exist())	destory[2] = tank1_bullet2.pre_time();
-		if (tank1_bullet3.is_exist())	destory[3] = tank1_bullet3.pre_time();
-		if (tank1_bullet4.is_exist())	destory[4] = tank1_bullet4.pre_time();
-
-		if (tank2_bullet0.is_exist())	destory[5] = tank2_bullet0.pre_time();
-		if (tank2_bullet1.is_exist())	destory[6] = tank2_bullet1.pre_time();
-		if (tank2_bullet2.is_exist())	destory[7] = tank2_bullet2.pre_time();
-		if (tank2_bullet3.is_exist())	destory[8] = tank2_bullet3.pre_time();
-		if (tank2_bullet4.is_exist())	destory[9] = tank2_bullet4.pre_time();
-
-		int i = 0;
-		for (i = 0; i < 10; ++i)
-		{
-			if (destory[i] == -1)
-				tank1.tank_unshow();
-			else if (destory[i] == -2)
-				tank2.tank_unshow();
-		}
-		map_test.wallmap_show();
-
-		tank1_bullet0.anti_bug();
-		tank1_bullet1.anti_bug();
-		tank1_bullet2.anti_bug();
-		tank1_bullet3.anti_bug();
-		tank1_bullet4.anti_bug();
-		
-		tank2_bullet0.anti_bug();
-		tank2_bullet1.anti_bug();
-		tank2_bullet2.anti_bug();
-		tank2_bullet3.anti_bug();
-		tank2_bullet4.anti_bug();
-		
-		map_test.wallmap_show();
-
-		endPaint();
-
-		if (tank1_bullet_interval)	--tank1_bullet_interval;
-		if (tank2_bullet_interval)	--tank2_bullet_interval;
 	}
 }
