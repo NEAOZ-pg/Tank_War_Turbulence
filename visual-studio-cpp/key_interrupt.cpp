@@ -1,6 +1,8 @@
 #include <iostream>
 #include "acllib.h"
 
+#include "global_param.h"
+
 int key_A = 0;
 int key_W = 0;
 int key_S = 0;
@@ -14,6 +16,12 @@ int key_SPACE = 0;
 
 int Key_User1_ENABLE = 1;
 int Key_User2_ENABLE = 1;
+
+int Mouse_LEFT_Start = 0;
+int Mouse_LEFT_Continue = 0;
+int Mouse_LEFT_Restart = 0;
+int Mouse_LEFT_EXIT = 0;
+int Mouse_LEFT_Pause = 0;
 
 void keyevent(int key, int event)
 {
@@ -48,5 +56,61 @@ void keyevent(int key, int event)
 		else if (key == 0x26) { std::cout << "UP = 0\n"; key_UP = 0; }
 		else if (key == 0x27) { std::cout << "RIGHT = 0\n"; key_RIGHT = 0; }
 		else if (key == 0x28) { std::cout << "DOWN = 0\n"; key_DOWN = 0; }
+	}
+}
+
+void mouseevent(int x, int y, int button, int event)
+{
+	if (button == LEFT_BUTTON)
+	{
+		if (interface_state == INTERFACE_MENU_BEGIN)
+		{
+			if (x > 100 && x < 1400)
+			{
+				if (event == BUTTON_DOWN)
+				{
+					std::cout << "Mouse_LEFT_Start\n";
+					Mouse_LEFT_Start = 1;
+				}
+			}
+		}
+		else if (interface_state == INTERFACE_MENU_PAUSE)
+		{
+			if (y > 200 && y < 300)
+			{
+				if (event == BUTTON_DOWN)
+				{
+					std::cout << "Mouse_LEFT_Continue\n";
+					Mouse_LEFT_Continue = 1;
+				}
+			}
+			else if (y > 400 && y < 500)
+			{
+				if (event == BUTTON_DOWN)
+				{
+					std::cout << "Mouse_LEFT_Restart\n";
+					Mouse_LEFT_Restart = 1;
+				}
+			}
+			else if (y > 600 && y < 1300)
+			{
+				if (event == BUTTON_DOWN)
+				{
+					std::cout << "Mouse_LEFT_EXIT\n";
+					Mouse_LEFT_EXIT = 1;
+				}
+			}
+		}
+		else if (interface_state == INTERFACE_GAME_INIT || interface_state == INTERFACE_GAME_PLAY)
+		{
+			if (x > 1200 && y > 700)
+			{
+				if (event == BUTTON_DOWN)
+				{
+					std::cout << "Mouse_LEFT_Pause\n";
+					Mouse_LEFT_Pause = 1;
+				}
+			}
+		}
 	}
 }

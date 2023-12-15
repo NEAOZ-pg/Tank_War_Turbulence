@@ -1,6 +1,7 @@
 #include <windows.h>
 #include <time.h>
 #include <iostream>
+#include "global_param.h"
 #include "map_create.h"
 #include "key_interrupt.h"
 #include "acllib.h"
@@ -8,16 +9,12 @@
 #include "tank.h"
 #include "bullet.h"
 
-#define INTERFACE_GAME_INIT 0
-#define INTERFACE_GAME_PLAY 1
 #define BULLET_INTERVAL 10
 #define TANK_DESTORY_INTERVAL 150
 
 #define TIMEID_GAME 0
 
 void timeevent(int timeID);
-
-int interface_state = 0;
 
 WallMap map_test;
 Tank tank1;
@@ -36,6 +33,11 @@ int tank1_bullet_interval;
 int tank2_bullet_interval;
 int tank_destory_interval;
 
+char menu_start[] = "start.jpeg";
+char menu_pause[] = "pause.bmp";
+ACL_Image img_start;
+ACL_Image img_pause;
+
 int Setup()		//	
 {
 	//menu£º
@@ -48,17 +50,66 @@ int Setup()		//
 	srand(time(NULL));
 	initWindow("Test", 200, 50, WINDOW_LENGTH, WINDOW_WIDTH);
 	initConsole();
+	loadImage(menu_start, &img_start);
+	loadImage(menu_pause, &img_pause);
+	registerMouseEvent(mouseevent);
 	registerKeyboardEvent(keyevent);
 	registerTimerEvent(timeevent);
 	startTimer(0, 20);
 	return 0;
 }
 
+void pause_check()
+{
+	if (Mouse_LEFT_Pause == 1)
+	{
+		interface_state = INTERFACE_MENU_PAUSE;
+		Mouse_LEFT_Pause = 0;
+	}
+}
+
 void timeevent(int timeID)
 {
 	if (timeID == TIMEID_GAME)
 	{
-		if (interface_state == INTERFACE_GAME_INIT)
+		if (interface_state == INTERFACE_MENU_BEGIN)
+		{
+			beginPaint();
+			putImage(&img_start, 100, 0);
+			endPaint();
+
+			if (Mouse_LEFT_Start == 1)
+			{
+				interface_state = INTERFACE_GAME_INIT;
+				Mouse_LEFT_Start = 0;
+			}
+		}
+		else if (interface_state == INTERFACE_MENU_PAUSE)
+		{
+			beginPaint();
+			putImage(&img_pause, -100, -50);
+			endPaint();
+
+			extern int Mouse_LEFT_Continue;
+			extern int Mouse_LEFT_Restart;
+			if (Mouse_LEFT_Continue == 1)
+			{
+				interface_state = INTERFACE_GAME_PLAY;
+				Mouse_LEFT_Continue = 0;
+			}
+			else if (Mouse_LEFT_Restart == 1)
+			{
+				interface_state = INTERFACE_MENU_BEGIN;
+				Mouse_LEFT_Restart = 0;
+			}
+			else if (Mouse_LEFT_EXIT == 1)
+			{
+				//µÈµÈ,Ã»Ð´
+				interface_state = INTERFACE_MENU_BEGIN;
+				Mouse_LEFT_EXIT = 0;
+			}
+		}
+		else if (interface_state == INTERFACE_GAME_INIT)
 		{
 			tank_destory_interval = -1;
 
@@ -72,6 +123,7 @@ void timeevent(int timeID)
 			map_test = map_init;
 			map_test.wallmap_show();
 			map_free(testmap, length, width);
+			
 			Tank tank_1(1, TANK1_COLOR, random_coordinate(map_test), random_angle());
 			tank1 = tank_1;
 			tank1.tank_show();
@@ -80,9 +132,13 @@ void timeevent(int timeID)
 			tank2 = tank_2;
 			tank2.tank_show();
 
+			rectangle(1200, 700, WINDOW_LENGTH, WINDOW_WIDTH);
+
 			endPaint();
 
 			interface_state = INTERFACE_GAME_PLAY;
+
+			pause_check();
 		}
 		else if (interface_state == INTERFACE_GAME_PLAY)
 		{
@@ -283,6 +339,10 @@ void timeevent(int timeID)
 			}
 
 			endPaint();
+
+			pause_check();
 		}
 	}
 }
+
+

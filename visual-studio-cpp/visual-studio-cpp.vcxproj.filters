@@ -22,6 +22,9 @@
     <Filter Include="interrput">
       <UniqueIdentifier>{5c62add0-9b8e-4e08-b932-028efe971131}</UniqueIdentifier>
     </Filter>
+    <Filter Include="img">
+      <UniqueIdentifier>{1670af36-b6a6-40f3-b766-7ea7386f1568}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -77,5 +80,13 @@
     <ClInclude Include="map_create.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="start.jpeg">
+      <Filter>img</Filter>
+    </Image>
+    <Image Include="pause.bmp">
+      <Filter>img</Filter>
+    </Image>
   </ItemGroup>
 </Project>

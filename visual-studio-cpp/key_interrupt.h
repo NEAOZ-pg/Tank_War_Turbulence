@@ -15,6 +15,13 @@ extern int key_SPACE;
 extern int Key_User1_ENABLE;
 extern int Key_User2_ENABLE;
 
+extern int Mouse_LEFT_Start;
+extern int Mouse_LEFT_Continue;
+extern int Mouse_LEFT_Restart;
+extern int Mouse_LEFT_EXIT;
+extern int Mouse_LEFT_Pause;
+
 void keyevent(int key, int event);
+void mouseevent(int x, int y, int button, int event);
 
 #endif
