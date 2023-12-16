@@ -1,8 +1,18 @@
 #include "solid_object.h"
 
+//INIT
+
 SolidObject::SolidObject()
 {
-
+	_user = -1;	
+	_color = EMPTY;
+	_center[0] = 0;
+	_center[1] = 0;
+	_angle = 0;
+	_half_length = 0;
+	_half_width = 0;
+	_linear_v = 0;
+	_angular_v = 0;
 }
 
 SolidObject::SolidObject(int user, ACL_Color color, int center0, int center1,
@@ -18,40 +28,44 @@ SolidObject::~SolidObject()
 {
 }
 
-int SolidObject::get_angle()
-{
-	return _angle;
-}
-
-POINT* SolidObject::get_points()
-{
-	POINT* points = new POINT[4];
-	_points_symmetric(points, _center, _angle);
-	return points;
-}
-
 // protected
 
+/**
+  * @brief  将center2赋值给center1
+  * @param1	center1：赋入
+  * @param2	center2：赋出
+  * @retval None
+  */
 void SolidObject::_assign_center(int* center1, const int* center2)
 {
 	center1[0] = center2[0];
 	center1[1] = center2[1];
 }
 
+/**
+  * @brief  理想情况向前移动_center
+  * @param1	new_center:理想情况移动后的值
+  * @retval None
+  */
 void SolidObject::_for_move(int* new_center)
 {
-	new_center[0] = _center[0] + (int)(cos(_angle * PI / 180) * _linear_v);
-	new_center[1] = _center[1] + (int)(sin(_angle * PI / 180) * _linear_v);
-}
-
-void SolidObject::_back_move(int* new_center)
-{
-	new_center[0] = _center[0] - (int)(cos(_angle * PI / 180) * _linear_v);
-	new_center[1] = _center[1] - (int)(sin(_angle * PI / 180) * _linear_v);
+	new_center[0] = _center[0] + round((cos(_angle * PI / 180) * _linear_v));
+	new_center[1] = _center[1] + round((sin(_angle * PI / 180) * _linear_v));
 }
 
 /**
-  * @brief  计算右方上角的点（_angle = 0)的坐标
+  * @brief  理想情况向后移动_center
+  * @param1	new_center:理想情况移动后的值
+  * @retval None
+  */
+void SolidObject::_back_move(int* new_center)
+{
+	new_center[0] = _center[0] - round((cos(_angle * PI / 180) * _linear_v));
+	new_center[1] = _center[1] - round((sin(_angle * PI / 180) * _linear_v));
+}
+
+/**
+  * @brief  计算右方上角的点（相对_angle = 0)的坐标
   * @param  None
   * @retval 在画布坐标系下的坐标（x，y）
   */
@@ -59,9 +73,9 @@ POINT SolidObject::_point_coordinates(int* center, int angle)
 {
 	POINT coordiante =
 	{
-		center[0] + (long)(_half_length * cos(angle * PI / 180) 
+		center[0] + (long)round(_half_length * cos(angle * PI / 180) 
 			+ _half_width * cos((angle + 90) * PI / 180)),
-		center[1] + (long)(_half_length * sin(angle * PI / 180) 
+		center[1] + (long)round(_half_length * sin(angle * PI / 180)
 			+ _half_width * sin((angle + 90) * PI / 180)),
 	};
 	return coordiante;
@@ -77,8 +91,8 @@ void SolidObject::_points_symmetric(POINT *points, int *center, int angle)
 	POINT point = _point_coordinates(center, angle);
 	points[0].x = point.x;
 	points[0].y = point.y;
-	points[1].x = (long)(point.x - 2 * _half_length * cos(angle * PI / 180));
-	points[1].y = (long)(point.y - 2 * _half_length * sin(angle * PI / 180));
+	points[1].x = (long)round(point.x - 2 * _half_length * cos(angle * PI / 180));
+	points[1].y = (long)round(point.y - 2 * _half_length * sin(angle * PI / 180));
 	points[2].x = 2 * center[0] - points[0].x;
 	points[2].y = 2 * center[1] - points[0].y;
 	points[3].x = 2 * center[0] - points[1].x;
@@ -245,6 +259,26 @@ int SolidObject::_judge_rotate_crash(int next_angle)
 
 //public
 
+int SolidObject::get_angle()
+{
+	return _angle;
+}
+
+/**
+  * @brief  获取四角的坐标
+  * @param  None
+  * @retval None
+  */
+void SolidObject::get_points(POINT* points)
+{
+	_points_symmetric(points, _center, _angle);
+}
+
+/**
+  * @brief  向前移动
+  * @param  None
+  * @retval None
+  */
 void SolidObject::move_for_per_time()
 {
 	//_for_move(_center);
@@ -254,6 +288,11 @@ void SolidObject::move_for_per_time()
 	_judge_move_crash(next_center);
 }
 
+/**
+  * @brief  向后移动
+  * @param  None
+  * @retval None
+  */
 void SolidObject::move_back_per_time()
 {
 	//_back_move(_center);
@@ -263,20 +302,25 @@ void SolidObject::move_back_per_time()
 	_judge_move_crash(next_center);
 }
 
+/**
+  * @brief  顺时针（clockwise）旋转
+  * @param  None
+  * @retval None
+  */
 void SolidObject::rotate_CW_per_time()
 {
 	_angle += _angular_v;
 	//_judge_rotate_crash(_angle + _angular_v);
 }
 
+/**
+  * @brief  逆时针（counterclockwise）旋转
+  * @param  None
+  * @retval None
+  */
 void SolidObject::rotate_CCW_per_time()
 {
 	_angle -= _angular_v;
 	//_judge_rotate_crash(_angle - _angular_v);
 }
 
-/**
-  * @brief  判断SolidObject是否crash Map
-  * @param  None
-  * @retval 1:uncrash	0:crash
-  */

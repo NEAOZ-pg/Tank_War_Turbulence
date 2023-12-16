@@ -54,7 +54,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\25836\Desktop\tank_war\visual-studio-cpp\img;C:\Users\25836\Desktop\tank_war\visual-studio-cpp;C:\Users\25836\Desktop\tank_war\visual-studio-cpp\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\25836\Desktop\tank_war\visual-studio-cpp\src;C:\Users\25836\Desktop\tank_war\visual-studio-cpp\img;C:\Users\25836\Desktop\tank_war\visual-studio-cpp;C:\Users\25836\Desktop\tank_war\visual-studio-cpp\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <ConformanceMode>Default</ConformanceMode>
       <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
@@ -79,7 +79,7 @@
       <ConformanceMode>Default</ConformanceMode>
       <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <AdditionalIncludeDirectories>C:\Users\25836\Desktop\tank_war\visual-studio-cpp\img;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\25836\Desktop\tank_war\visual-studio-cpp\src;C:\Users\25836\Desktop\tank_war\visual-studio-cpp\img;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -110,8 +110,10 @@
     <ClInclude Include="solid_object.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="developer.bmp" />
+    <Image Include="introduction.bmp" />
     <Image Include="pause.bmp" />
-    <Image Include="start.jpeg" />
+    <Image Include="start.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

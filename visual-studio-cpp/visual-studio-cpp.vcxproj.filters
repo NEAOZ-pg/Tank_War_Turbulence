@@ -82,10 +82,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="start.jpeg">
+    <Image Include="pause.bmp">
       <Filter>img</Filter>
     </Image>
-    <Image Include="pause.bmp">
+    <Image Include="developer.bmp">
+      <Filter>img</Filter>
+    </Image>
+    <Image Include="introduction.bmp">
+      <Filter>img</Filter>
+    </Image>
+    <Image Include="start.bmp">
       <Filter>img</Filter>
     </Image>
   </ItemGroup>

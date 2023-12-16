@@ -5,8 +5,9 @@
 #define TANK_LENGTH		25
 #define TANK_WIDTH		15
 #define TANK_LINEAR_V	9
-#define TANK_ANGULAR_V	10
+#define TANK_ANGULAR_V	15
 
+//INIT
 
 Tank::Tank()
 {
@@ -23,6 +24,11 @@ Tank::~Tank()
 
 //private
 
+/**
+  * @brief  计算坦克炮管的四个角地址
+  * @param  point:用于存放炮管四个角位置
+  * @retval None
+  */
 POINT* Tank::_points_cannon(POINT* points)
 {
 	POINT cannon[4];
@@ -39,38 +45,51 @@ POINT* Tank::_points_cannon(POINT* points)
 
 //public
 
+/**
+  * @brief  清除上一次坦克位置显示
+  * @param  None
+  * @retval None
+  */
 void Tank::tank_unshow()
 {
 	setPenColor(WHITE);
 	setPenWidth(0);
 	setBrushColor(WHITE);
 	setBrushStyle(BRUSH_STYLE_SOLID);
+	//擦除坦克机身
 	POINT points[4];
 	_points_symmetric(points, _center, _angle);
 	polygon(points, 4);
-	setBrushColor(WHITE);
+	//擦除坦克炮管（上一次可能擦除不完全）
 	polygon(_points_cannon(points), 4);
 }
 
+/**
+  * @brief  坦克位置显示
+  * @param  None
+  * @retval None
+  */
 void Tank::tank_show()
 {
 	setPenColor(EMPTY);
 	setPenWidth(0);
 	setBrushColor(_color);
 	setBrushStyle(BRUSH_STYLE_SOLID);
+	//显示坦克机身
 	POINT points[4];
 	_points_symmetric(points, _center, _angle);
 	polygon(points, 4);
+	//显示坦克炮管（偷懒了就都是红色）
 	setBrushColor(RED);
 	polygon(_points_cannon(points), 4);
 }
 
 /**
-  * @brief  随机生成tank的位置
+  * @brief  随机生成tank的位置,位于每一个地图块的中央
   * @param  my_map : wallmap
   * @retval random_center[2]
   */
-int* random_coordinate(WallMap my_map)
+int* Tank::random_coordinate(WallMap my_map)
 {
 	int random_c[2];
 	do 
@@ -87,7 +106,7 @@ int* random_coordinate(WallMap my_map)
   * @param  NONE
   * @retval angle
   */
-int random_angle()
+int Tank::random_angle()
 {
 	return rand() % 4 * 90;
 }

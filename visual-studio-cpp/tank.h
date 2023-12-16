@@ -12,18 +12,20 @@
 
 class Tank:public SolidObject
 {
-private:
-	POINT* _points_cannon(POINT* points);
 public:
 	Tank();
 	Tank(int user, ACL_Color color, int* center, int angle);
 	~Tank();
 
+private:
+	POINT* _points_cannon(POINT* points);
+
+public:
 	void tank_unshow();
 	void tank_show();
-};
 
-int* random_coordinate(WallMap my_map);
-int random_angle();
+	static int* random_coordinate(WallMap my_map);
+	static int random_angle();
+};
 
 #endif

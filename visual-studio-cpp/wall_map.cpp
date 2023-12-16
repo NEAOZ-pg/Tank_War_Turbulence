@@ -1,6 +1,8 @@
 #include "wall_map.h"
 #include "stdlib.h"
 
+//INIT
+
 WallMap::WallMap()
 {
 	_axis_x = 0;
@@ -97,22 +99,6 @@ WallMap::~WallMap()
 }
 
 //private
-/**
-  * @brief  判断某line和column的单位block的四边情况
-  * @param  line：行坐标（对应width）
-  * @param	column: 列坐标（对应length）
-  * @retval frontier[4]: f[0]：up，f[1]：down，f[2]：left，f[3]：right
-						1 有障碍		0 无障碍
-  */
-int* WallMap::_get_frontier(int line, int column)
-{
-	int frontier[4] = { 0,0,0,0, };
-	int i = 0;
-	for (i = 0; i < 4; i++)
-		frontier[i] = wallmap[line][column][i];
-
-	return frontier;
-}
 
 /**
   * @brief  绘制一个单位block的四边的Wallmap
@@ -150,7 +136,7 @@ void WallMap::_wallmap_showoneblock(int line, int column)
 }
 
 /**
-  * @brief  加粗Map的边框，防止Map边框穿角（可以删掉这个看看运行效果）
+  * @brief  加粗Map的边框，防止Map边框穿角（可以删掉这个看看运行BUG）
   * @param  None
   * @retval None
   */
@@ -174,6 +160,7 @@ void WallMap::_wallmap_showframe()
 }
 
 //public
+
 int WallMap::get_axis_x()
 {
 	return _axis_x;
@@ -209,7 +196,12 @@ void WallMap::wallmap_show()
 	_wallmap_showframe();
 }
 
-void windows_clear()
+/**
+  * @brief  清空窗口屏幕
+  * @param  None
+  * @retval None
+  */
+void WallMap::windows_clear()
 {
 	setBrushColor(WHITE);
 	setBrushStyle(BRUSH_STYLE_SOLID);
@@ -220,4 +212,3 @@ void windows_clear()
 
 	rectangle(0, 0, WINDOW_LENGTH, WINDOW_WIDTH);
 }
-

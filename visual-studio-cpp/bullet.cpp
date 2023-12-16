@@ -1,9 +1,22 @@
 #include "bullet.h"
 
-#define EXISTENCE_TIME 300	//  实际时长未知（定时器精度较差），视程序而定
+#define EXISTENCE_TIME 300	//实际时长未知（定时器精度较差），视程序而定
 #define RADIUS 8
 #define BULLET_SPEED 6
 
+//INIT
+
+Bullet::Bullet(int user) :
+	SolidObject(user, GREY, 0, 0, 0, RADIUS, RADIUS, BULLET_SPEED, 0),
+	_is_use(0), _survive_time(0)
+{
+}
+
+/**
+  * @brief  清除上一次的子弹位置显示
+  * @param  None
+  * @retval None
+  */
 void Bullet::_bullet_unshow()
 {
 	setPenColor(WHITE);
@@ -13,15 +26,13 @@ void Bullet::_bullet_unshow()
 	ellipse(_center[0] + RADIUS, _center[1] + RADIUS, _center[0] - RADIUS, _center[1] - RADIUS);
 }
 
-void Bullet::_bullet_show()
-{
-	setPenColor(WHITE); 
-	setPenWidth(0);
-	setBrushColor(_color);
-	setBrushStyle(BRUSH_STYLE_SOLID);
-	ellipse(_center[0] + RADIUS, _center[1] + RADIUS, _center[0] - RADIUS, _center[1] - RADIUS);
-}
-
+/**
+  * @brief  判断当前位置子弹有无撞墙
+  * @param  *center：预设预设子弹的x，y位置
+  * @retval 1：UP	2：DOWN	3：LEFT	4：RIGHT
+  				-1：TANK1（USER1）	-2：TANK2（USER2）
+				0：None
+  */
 int Bullet::_bullet_state_judge(int* center)
 {
 	int angle = 0;
@@ -48,11 +59,16 @@ int Bullet::_bullet_state_judge(int* center)
 	return 0;
 }
 
-//just judege the map
+/**
+  * @brief  判断子弹在运动到下一个位置过程中有无撞墙
+  * @param1 *pre_center：先前的子弹x,y位置
+  * @param2 *next_center：下一次的子弹理论的x,y位置
+  * @retval 1：UP	2：DOWN	3：LEFT	4：RIGHT
+				-1：TANK1（USER1）	-2：TANK2（USER2）
+				0：None
+  */
 int Bullet::_bullet_judge(int* pre_center, int* next_center)	//0: NONE	1:UP	2:down		3:left		4:right
 {
-	memset(pre_center, 0, sizeof(pre_center));
-	memset(next_center, 0, sizeof(next_center));
 	_for_move(next_center);
 	_assign_center(pre_center, _center);
 	int center[2];
@@ -71,6 +87,17 @@ int Bullet::_bullet_judge(int* pre_center, int* next_center)	//0: NONE	1:UP	2:do
 	return judge;
 }
 
+/**
+  * @brief  根据judge值移动子弹_center和反射_angle
+  * @param1 judge：1：UP	2：DOWN	3：LEFT	4：RIGHT
+				   	-1：TANK1（USER1）	-2：TANK2（USER2）
+				   	0：None
+  * @param2 *pre_center：先前的子弹x,y位置
+  * @param3 *next_center：下一次的子弹理论的x,y位置
+  * @retval 1：UP	2：DOWN	3：LEFT	4：RIGHT
+				-1：TANK1（USER1）	-2：TANK2（USER2）
+				0：None
+  */
 void Bullet::_bullet_move(int judge, int* pre_center, int* next_center)
 {
 	if (judge == 0)
@@ -103,12 +130,31 @@ void Bullet::_bullet_move(int judge, int* pre_center, int* next_center)
 	}
 }
 
-Bullet::Bullet(int user):
-	SolidObject(user, GREY, 0, 0, 0, RADIUS, RADIUS, BULLET_SPEED, 0),
-	_is_use(0),_survive_time(0)
+/**
+  * @brief  针对子弹刚发射时的小bug修复（还存在其他bug，称之为小彩蛋或者“有意为之”的逃课技巧）
+  * @param  None
+  * @retval None
+  */
+void Bullet::_first_shoot_anti_bug()
 {
+	if (_survive_time = 300)
+	{
+		if (getPixel(_center[0], _center[1]) == BLACK)
+		{
+			_angle = (_angle + 180) / 2;
+			_for_move(_center);
+		}
+	}
 }
 
+//public
+
+/**
+  * @brief  子弹发射时的启用初始化
+  * @param1 orient：tank朝向
+  * @param2 *tank_points：tank四角坐标
+  * @retval None
+  */
 void Bullet::init(int orient, POINT* tank_points)
 {
 	_is_use = 1;
@@ -119,6 +165,11 @@ void Bullet::init(int orient, POINT* tank_points)
 	_center[1] = (tank_points[0].y + tank_points[3].y) / 2 + (int)((RADIUS + 1.5) * sin(_angle * PI / 180));
 }
 
+/**
+  * @brief  游戏结束时子弹的弃用
+  * @param  None
+  * @retval None
+  */
 void Bullet::clear()
 {
 	_is_use = 0;
@@ -126,13 +177,24 @@ void Bullet::clear()
 	_bullet_unshow();
 }
 
+/**
+  * @brief  子弹是否活着
+  * @param  None
+  * @retval 1：活着	0：死了
+  */
 bool Bullet::is_exist()
 {
 	return _is_use;
 }
 
+/**
+  * @brief  子弹每一次的移动，并显示子弹在window上
+  * @param  None
+  * @retval None
+  */
 int Bullet::pre_time()
 {
+	_first_shoot_anti_bug();
 	_bullet_unshow();
 	int pre_center[2];
 	int next_center[2];
@@ -148,16 +210,22 @@ int Bullet::pre_time()
 		return 0;
 	}
 	_bullet_move(judge, pre_center, next_center);
-	_bullet_show();
+	bullet_show();
 	return 0;
 }
 
-void Bullet::anti_bug()
+
+/**
+  * @brief  子弹位置显示
+  * @param  None
+  * @retval None
+  */
+void Bullet::bullet_show()
 {
-	if (getPixel(_center[0], _center[1]) == BLACK && _survive_time > 295)
-	{
-		_bullet_unshow();
-		_for_move(_center);
-		_for_move(_center);
-	}
+	setPenColor(WHITE);
+	setPenWidth(0);
+	setBrushColor(_color);
+	setBrushStyle(BRUSH_STYLE_SOLID);
+	ellipse(_center[0] + RADIUS, _center[1] + RADIUS, _center[0] - RADIUS, _center[1] - RADIUS);
 }
+

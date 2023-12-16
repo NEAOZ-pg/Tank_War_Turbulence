@@ -17,11 +17,15 @@ int key_SPACE = 0;
 int Key_User1_ENABLE = 1;
 int Key_User2_ENABLE = 1;
 
-int Mouse_LEFT_Start = 0;
-int Mouse_LEFT_Continue = 0;
-int Mouse_LEFT_Restart = 0;
-int Mouse_LEFT_EXIT = 0;
-int Mouse_LEFT_Pause = 0;
+int Mouse_MENU_Start = 0;
+int Mouse_MENU_INTRODUCTION = 0;
+int Mouse_MENU_DEVELPOMENT = 0;
+int Mouse_MENU_EXIT = 0;
+int Mouse_PAUSE_CONTINUE = 0;
+int Mouse_PAUSE_MENU = 0;
+int Mouse_PAUSE_EXIT = 0;
+int Mouse_PLAY_PAUSE = 0;
+int Mouse_MENU_RETURN = 0;
 
 void keyevent(int key, int event)
 {
@@ -59,56 +63,85 @@ void keyevent(int key, int event)
 	}
 }
 
+void user1_key_remake()
+{
+	key_A = 0;
+	key_W = 0;
+	key_S = 0;
+	key_D = 0;
+	key_SPACE = 0;
+}
+
+void user2_key_remake()
+{
+	key_UP = 0;
+	key_DOWN = 0;
+	key_LEFT = 0;
+	key_RIGHT = 0;
+	key_ENTER = 0;
+}
+
 void mouseevent(int x, int y, int button, int event)
 {
 	if (button == LEFT_BUTTON)
 	{
-		if (interface_state == INTERFACE_MENU_BEGIN)
+		if (event == BUTTON_DOWN)
 		{
-			if (x > 100 && x < 1400)
+			if (interface_state == INTERFACE_MENU_BEGIN)
 			{
-				if (event == BUTTON_DOWN)
+				if (x > 520 && x < 800 && y > 430 && y < 510)
 				{
-					std::cout << "Mouse_LEFT_Start\n";
-					Mouse_LEFT_Start = 1;
+					std::cout << "Mouse_MENU_Start\n";
+					Mouse_MENU_Start = 1;
+				}
+				else if (x > 170 && x < 450 && y > 465 && y < 545)
+				{
+					std::cout << "Mouse_MENU_DEVELPOMENT\n";
+					Mouse_MENU_DEVELPOMENT = 1;
+				}
+				else if (x > 520 && x < 800 && y > 530 && y < 605)
+				{
+					std::cout << "Mouse_MENU_INTRODUCTION\n";
+					Mouse_MENU_INTRODUCTION = 1;
+				}
+				else if (x > 860 && x < 1140 && y > 465 && y < 545)
+				{
+					std::cout << "Mouse_MENU_EXIT\n";
+					Mouse_MENU_EXIT = 1;
 				}
 			}
-		}
-		else if (interface_state == INTERFACE_MENU_PAUSE)
-		{
-			if (y > 200 && y < 300)
+			else if (interface_state == INTERFACE_MENU_PAUSE)
 			{
-				if (event == BUTTON_DOWN)
+				if (x > 400 && x < 900 && y > 150 && y < 250)
 				{
-					std::cout << "Mouse_LEFT_Continue\n";
-					Mouse_LEFT_Continue = 1;
+					std::cout << "Mouse_PAUSE_CONTINUE\n";
+					Mouse_PAUSE_CONTINUE = 1;
+				}
+				else if (x > 400 && x < 900 && y > 350 && y < 450)
+				{
+					std::cout << "Mouse_PAUSE_MENU\n";
+					Mouse_PAUSE_MENU = 1;
+				}
+				else if (x > 400 && x < 900 && y > 550 && y < 650)
+				{
+					std::cout << "Mouse_PAUSE_EXIT\n";
+					Mouse_PAUSE_EXIT = 1;
 				}
 			}
-			else if (y > 400 && y < 500)
+			else if (interface_state == INTERFACE_GAME_INIT || interface_state == INTERFACE_GAME_PLAY)
 			{
-				if (event == BUTTON_DOWN)
+				if (x > 1200 && y > 700)
 				{
-					std::cout << "Mouse_LEFT_Restart\n";
-					Mouse_LEFT_Restart = 1;
+					std::cout << "Mouse_PLAY_PAUSE\n";
+					Mouse_PLAY_PAUSE = 1;
 				}
 			}
-			else if (y > 600 && y < 1300)
+			else if (interface_state == INTERFACE_MENU_INTRODUCTION || interface_state == INTERFACE_MENU_DEVELPOER)
 			{
-				if (event == BUTTON_DOWN)
+				if (x > 1200 && y > 700)
 				{
-					std::cout << "Mouse_LEFT_EXIT\n";
-					Mouse_LEFT_EXIT = 1;
-				}
-			}
-		}
-		else if (interface_state == INTERFACE_GAME_INIT || interface_state == INTERFACE_GAME_PLAY)
-		{
-			if (x > 1200 && y > 700)
-			{
-				if (event == BUTTON_DOWN)
-				{
-					std::cout << "Mouse_LEFT_Pause\n";
-					Mouse_LEFT_Pause = 1;
+					std::cout << "Mouse_MENU_RETURN\n";
+					Mouse_MENU_RETURN = 1;
 				}
 			}
 		}

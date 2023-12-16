@@ -9,14 +9,14 @@
 #include "tank.h"
 #include "bullet.h"
 
-#define BULLET_INTERVAL 10
-#define TANK_DESTORY_INTERVAL 150
+#define BULLET_INTERVAL 8
+#define TANK_DESTORY_INTERVAL 120
 
 #define TIMEID_GAME 0
 
 void timeevent(int timeID);
 
-WallMap map_test;
+WallMap map_formal;
 Tank tank1;
 Tank tank2;
 Bullet tank1_bullet0(1);
@@ -33,158 +33,227 @@ int tank1_bullet_interval;
 int tank2_bullet_interval;
 int tank_destory_interval;
 
-char menu_start[] = "start.jpeg";
+char menu_start[] = "start.bmp";
 char menu_pause[] = "pause.bmp";
+char menu_intro[] = "introduction.bmp";
+char menu_devel[] = "developer.bmp";
 ACL_Image img_start;
 ACL_Image img_pause;
+ACL_Image img_intro;
+ACL_Image img_devel;
 
-int Setup()		//	
+int Setup()
 {
-	//menu：
-	/*
-	将自己写的menu打包成函数，在该处运行，显示menu
-	满足每个界面都用	仅一个函数（这里指仅能在setup里面仅调用一个函数，函数里面的事情我不管）	就可以在windows上显示
-	至于界面的跳转，暂时通过	手动更改上面的一个函数，然后再次编译运行		来实现不同菜单的“”硬切换“”
-	先把这个做出来，剩余的再说
-	*/
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
+	//窗口大小初始化
 	initWindow("Test", 200, 50, WINDOW_LENGTH, WINDOW_WIDTH);
-	initConsole();
+	//initConsole();
+	//图片加载
 	loadImage(menu_start, &img_start);
 	loadImage(menu_pause, &img_pause);
+	loadImage(menu_intro, &img_intro);
+	loadImage(menu_devel, &img_devel);
+	//中断使能
 	registerMouseEvent(mouseevent);
 	registerKeyboardEvent(keyevent);
 	registerTimerEvent(timeevent);
-	startTimer(0, 20);
+	//定时器使能
+	startTimer(TIMEID_GAME, 30);
 	return 0;
-}
-
-void pause_check()
-{
-	if (Mouse_LEFT_Pause == 1)
-	{
-		interface_state = INTERFACE_MENU_PAUSE;
-		Mouse_LEFT_Pause = 0;
-	}
 }
 
 void timeevent(int timeID)
 {
 	if (timeID == TIMEID_GAME)
-	{
+	{	
+		//menu菜单
 		if (interface_state == INTERFACE_MENU_BEGIN)
 		{
 			beginPaint();
-			putImage(&img_start, 100, 0);
+			putImage(&img_start, 0, 0);
 			endPaint();
-
-			if (Mouse_LEFT_Start == 1)
+			 
+			if (Mouse_MENU_Start == 1)
 			{
 				interface_state = INTERFACE_GAME_INIT;
-				Mouse_LEFT_Start = 0;
+				Mouse_MENU_Start = 0;
+			}
+			else if (Mouse_MENU_INTRODUCTION == 1)
+			{
+				interface_state = INTERFACE_MENU_INTRODUCTION;
+				Mouse_MENU_INTRODUCTION = 0;
+			}
+			else if (Mouse_MENU_DEVELPOMENT == 1)
+			{
+				interface_state = INTERFACE_MENU_DEVELPOER;
+				Mouse_MENU_DEVELPOMENT = 0;
+			}
+			else if (Mouse_MENU_EXIT == 1)
+			{
+				ExitProcess(NULL);
 			}
 		}
+		//INTRODUCTION菜单
+		else if (interface_state == INTERFACE_MENU_INTRODUCTION)
+		{
+			beginPaint();
+			putImage(&img_intro, 0, 0);
+			endPaint();
+
+			if (Mouse_MENU_RETURN == 1)
+			{
+				interface_state = INTERFACE_MENU_BEGIN;
+				Mouse_MENU_RETURN = 0;
+			}
+		}
+		//DEVELPER菜单
+		else if (interface_state == INTERFACE_MENU_DEVELPOER)
+		{
+			beginPaint();
+			putImage(&img_devel, 0, 0);
+			endPaint();
+
+			if (Mouse_MENU_RETURN == 1)
+			{
+				interface_state = INTERFACE_MENU_BEGIN;
+				Mouse_MENU_RETURN = 0;
+			}
+		}
+		//pause菜单
 		else if (interface_state == INTERFACE_MENU_PAUSE)
 		{
 			beginPaint();
-			putImage(&img_pause, -100, -50);
+			putImage(&img_pause, 0, 0);
 			endPaint();
 
-			extern int Mouse_LEFT_Continue;
-			extern int Mouse_LEFT_Restart;
-			if (Mouse_LEFT_Continue == 1)
+			if (Mouse_PAUSE_CONTINUE == 1)
 			{
+				beginPaint();
+				//清除图片
+				WallMap::windows_clear();
+
+				//map，tank，bullet显示
+				map_formal.wallmap_show();
+				
+				tank1.tank_show();
+				tank2.tank_show();
+				
+				if (tank1_bullet0.is_exist()) tank1_bullet0.bullet_show();
+				if (tank1_bullet1.is_exist()) tank1_bullet1.bullet_show();
+				if (tank1_bullet2.is_exist()) tank1_bullet2.bullet_show();
+				if (tank1_bullet3.is_exist()) tank1_bullet3.bullet_show();
+				if (tank1_bullet4.is_exist()) tank1_bullet4.bullet_show();
+
+				if (tank2_bullet0.is_exist()) tank2_bullet0.bullet_show();
+				if (tank2_bullet1.is_exist()) tank2_bullet1.bullet_show();
+				if (tank2_bullet2.is_exist()) tank2_bullet2.bullet_show();
+				if (tank2_bullet3.is_exist()) tank2_bullet3.bullet_show();
+				if (tank2_bullet4.is_exist()) tank2_bullet4.bullet_show();
+
+				endPaint();
+
+				//用户键盘解锁使用
+				Key_User1_ENABLE = 1;
+				Key_User2_ENABLE = 1;
+
+				//pause键显示
 				interface_state = INTERFACE_GAME_PLAY;
-				Mouse_LEFT_Continue = 0;
+				Mouse_PAUSE_CONTINUE = 0;
 			}
-			else if (Mouse_LEFT_Restart == 1)
+			else if (Mouse_PAUSE_MENU == 1)
 			{
 				interface_state = INTERFACE_MENU_BEGIN;
-				Mouse_LEFT_Restart = 0;
+				Mouse_PAUSE_MENU = 0;
 			}
-			else if (Mouse_LEFT_EXIT == 1)
+			else if (Mouse_PAUSE_EXIT == 1)
 			{
-				//等等,没写
-				interface_state = INTERFACE_MENU_BEGIN;
-				Mouse_LEFT_EXIT = 0;
+				ExitProcess(NULL);
 			}
 		}
+		//map，tank，bullet初始化
 		else if (interface_state == INTERFACE_GAME_INIT)
 		{
 			tank_destory_interval = -1;
 
 			beginPaint();
-			
-			windows_clear();
 
+			WallMap::windows_clear();
+
+			//tank初始化
 			int length = 0, width = 0;
-			testmap = map_creating(&length, &width);
-			WallMap map_init(length, width, testmap);
-			map_test = map_init;
-			map_test.wallmap_show();
-			map_free(testmap, length, width);
-			
-			Tank tank_1(1, TANK1_COLOR, random_coordinate(map_test), random_angle());
+			int*** the_map = map_creating(&length, &width);
+			WallMap map_init(length, width, the_map);
+			map_formal = map_init;
+			map_formal.wallmap_show();
+
+			//子弹初始化（10）
+			tank1_bullet0.clear();
+			tank1_bullet1.clear();
+			tank1_bullet2.clear();
+			tank1_bullet3.clear();
+			tank1_bullet4.clear();
+			tank2_bullet0.clear();
+			tank2_bullet1.clear();
+			tank2_bullet2.clear();
+			tank2_bullet3.clear();
+			tank2_bullet4.clear();
+
+			//tank1初始化
+			Tank tank_1(1, TANK1_COLOR, Tank::random_coordinate(map_formal), Tank::random_angle());
 			tank1 = tank_1;
 			tank1.tank_show();
 
-			Tank tank_2(2, TANK2_COLOR, random_coordinate(map_test), random_angle());
+			//tank2初始化
+			Tank tank_2(2, TANK2_COLOR, Tank::random_coordinate(map_formal), Tank::random_angle());
 			tank2 = tank_2;
 			tank2.tank_show();
 
+			//用户键盘解锁使用
+			Key_User1_ENABLE = 1;
+			Key_User2_ENABLE = 1;
+
+			//pause键显示
 			rectangle(1200, 700, WINDOW_LENGTH, WINDOW_WIDTH);
 
 			endPaint();
 
+			map_free(the_map, length, width);
 			interface_state = INTERFACE_GAME_PLAY;
-
-			pause_check();
 		}
+		//游戏
 		else if (interface_state == INTERFACE_GAME_PLAY)
 		{
+			beginPaint();
+			//tank1按键触发检测，并进行相应的操作
 			if (key_A)
-			{
-				beginPaint();
-				
+			{	
 				tank1.tank_unshow();
 				tank1.rotate_CCW_per_time();
 				tank1.tank_show();
-
-				endPaint();
 			}
 			if (key_D)
 			{
-				beginPaint();
-
 				tank1.tank_unshow();
 				tank1.rotate_CW_per_time();
 				tank1.tank_show();
-
-				endPaint();
 			}
 			if (key_W)
 			{
-				beginPaint();
-
 				tank1.tank_unshow();
 				tank1.move_for_per_time();
 				tank1.tank_show();
-
-				endPaint();
 			}
 			if (key_S)
 			{
-				beginPaint();
-
 				tank1.tank_unshow();
 				tank1.move_back_per_time();
 				tank1.tank_show();
-
-				endPaint();
 			}
+			//tank1子弹检测
 			if (key_SPACE && !tank1_bullet_interval)
 			{
-				POINT* points = tank1.get_points();
+				POINT points[4];
+				tank1.get_points(points);
 				if (!tank1_bullet0.is_exist())
 					tank1_bullet0.init(tank1.get_angle(), points);
 				else if (!tank1_bullet1.is_exist())
@@ -195,53 +264,39 @@ void timeevent(int timeID)
 					tank1_bullet3.init(tank1.get_angle(), points);
 				else if (!tank1_bullet4.is_exist())
 					tank1_bullet4.init(tank1.get_angle(), points);
-				delete[] points;
-
+				//防止按住按键不松手bullet重叠发射，设置发射间隔时间
 				tank1_bullet_interval = BULLET_INTERVAL;
 			}
+			//tank2按键触发检测，并进行相应的操作
 			if (key_LEFT)
 			{
-				beginPaint();
-
 				tank2.tank_unshow();
 				tank2.rotate_CCW_per_time();
 				tank2.tank_show();
-
-				endPaint();
 			}
 			if (key_RIGHT)
 			{
-				beginPaint();
-
 				tank2.tank_unshow();
 				tank2.rotate_CW_per_time();
 				tank2.tank_show();
-
-				endPaint();
 			}
 			if (key_UP)
 			{
-				beginPaint();
-
 				tank2.tank_unshow();
 				tank2.move_for_per_time();
 				tank2.tank_show();
-
-				endPaint();
 			}
 			if (key_DOWN)
 			{
-				beginPaint();
-
 				tank2.tank_unshow();
 				tank2.move_back_per_time();
 				tank2.tank_show();
-
-				endPaint();
 			}
+			//tank2子弹检测
 			if (key_ENTER && !tank2_bullet_interval)
 			{
-				POINT* points = tank2.get_points();
+				POINT points[4];
+				tank2.get_points(points);
 				if (!tank2_bullet0.is_exist())
 					tank2_bullet0.init(tank2.get_angle(), points);
 				else if (!tank2_bullet1.is_exist())
@@ -252,15 +307,14 @@ void timeevent(int timeID)
 					tank2_bullet3.init(tank2.get_angle(), points);
 				else if (!tank2_bullet4.is_exist())
 					tank2_bullet4.init(tank2.get_angle(), points);
-				delete[] points;
-
+				//防止按住按键不松手bullet重叠发射，设置发射间隔时间
 				tank2_bullet_interval = BULLET_INTERVAL;
 			}
 
+			//判断bullet是否撞击tank，并移动bullet
 			int destory[10];
 			memset(destory, 0, sizeof(destory));
-
-			beginPaint();
+			
 			if (tank1_bullet0.is_exist())	destory[0] = tank1_bullet0.pre_time();
 			if (tank1_bullet1.is_exist())	destory[1] = tank1_bullet1.pre_time();
 			if (tank1_bullet2.is_exist())	destory[2] = tank1_bullet2.pre_time();
@@ -280,11 +334,7 @@ void timeevent(int timeID)
 				{
 					tank1.tank_unshow();
 					Key_User1_ENABLE = 0;
-					key_A = 0;
-					key_D = 0;
-					key_W = 0;
-					key_S = 0;
-					key_SPACE = 0;
+					user1_key_remake();
 					if (tank_destory_interval == -1)
 						tank_destory_interval = TANK_DESTORY_INTERVAL;
 				}
@@ -292,57 +342,33 @@ void timeevent(int timeID)
 				{
 					tank2.tank_unshow();
 					Key_User2_ENABLE = 0;
-					key_LEFT = 0;
-					key_RIGHT = 0;
-					key_UP = 0;
-					key_DOWN = 0;
-					key_ENTER = 0;
+					user2_key_remake();
 					if (tank_destory_interval == -1)
 						tank_destory_interval = TANK_DESTORY_INTERVAL;
 				}
 
 			}
-			map_test.wallmap_show();
-
-			tank1_bullet0.anti_bug();
-			tank1_bullet1.anti_bug();
-			tank1_bullet2.anti_bug();
-			tank1_bullet3.anti_bug();
-			tank1_bullet4.anti_bug();
-
-			tank2_bullet0.anti_bug();
-			tank2_bullet1.anti_bug();
-			tank2_bullet2.anti_bug();
-			tank2_bullet3.anti_bug();
-			tank2_bullet4.anti_bug();
-
-			map_test.wallmap_show();
-
-			if (tank1_bullet_interval)	--tank1_bullet_interval;
-			if (tank2_bullet_interval)	--tank2_bullet_interval;
-			if (tank_destory_interval > 0)	--tank_destory_interval;
-			else if (tank_destory_interval == 0)
-			{
-				Key_User1_ENABLE = 1;
-				Key_User1_ENABLE = 1;
-				interface_state = INTERFACE_GAME_INIT;
-				tank1_bullet0.clear();
-				tank1_bullet1.clear();
-				tank1_bullet2.clear();
-				tank1_bullet3.clear();
-				tank1_bullet4.clear();	  
-				tank2_bullet0.clear();
-				tank2_bullet1.clear();
-				tank2_bullet2.clear();
-				tank2_bullet3.clear();
-				tank2_bullet4.clear();
-			}
+			map_formal.wallmap_show();
 
 			endPaint();
+			
+			//tank1&tank2的子弹发射间隔自减
+			if (tank1_bullet_interval)	--tank1_bullet_interval;
+			if (tank2_bullet_interval)	--tank2_bullet_interval;
 
-			pause_check();
+			//一方死亡后游戏倒计时
+			if (tank_destory_interval > 0)	--tank_destory_interval;
+			else if (tank_destory_interval == 0) interface_state = INTERFACE_GAME_INIT;
+
+			//暂停键检测
+			if (Mouse_PLAY_PAUSE == 1)
+			{
+				//禁用键盘
+				Key_User1_ENABLE = 0;
+				Key_User2_ENABLE = 0;
+				interface_state = INTERFACE_MENU_PAUSE;
+				Mouse_PLAY_PAUSE = 0;
+			}
 		}
 	}
 }
-
-

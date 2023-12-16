@@ -19,18 +19,18 @@ private:
 	int _width;
 	int*** wallmap;
 
-private:
-	int* _get_frontier(int line, int column);
-	void _wallmap_showoneblock(int line, int column);
-	void _wallmap_showframe();
-
 public:
 	WallMap();
 	WallMap(int length, int width, int*** map);
 	WallMap(const WallMap& w);
-	WallMap &operator=(const WallMap& map1);
+	WallMap& operator=(const WallMap& map1);
 	~WallMap();
 
+private:
+	void _wallmap_showoneblock(int line, int column);
+	void _wallmap_showframe();
+
+public:
 	int get_axis_x();
 	int get_axis_y();
 	int get_length();
@@ -38,8 +38,7 @@ public:
 
 	void wallmap_show();
 
+	static void windows_clear();
 };
-
-void windows_clear();
 
 #endif

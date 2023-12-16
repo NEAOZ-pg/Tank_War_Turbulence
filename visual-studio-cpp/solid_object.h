@@ -12,15 +12,21 @@
 class SolidObject
 {
 protected:
-	int _user;		//玩家	
-	ACL_Color _color;
-	int _center[2];	//以画布左上角为原点，SolidObject的中心坐标 -x  |y
-	int _angle;		//水平向右为正,顺时针自加
-	int _half_length;	//图片长度的1/2
-	int _half_width;		//图片宽度的1/2		方便绘图时可以直接根据center对称来绘制
-	int _linear_v;
-	int _angular_v;
+	int _user;					//玩家（编号）
+	ACL_Color _color;			//颜色
+	int _center[2];				//以画布左上角为原点，SolidObject的中心坐标 -x  |y
+	int _angle;					//水平向右为正,顺时针自加
+	int _half_length;			//长度的1/2
+	int _half_width;			//宽度的1/2		方便绘图时可以直接根据center对称来绘制
+	int _linear_v;				//线速度
+	int _angular_v;				//角速度
 
+public:
+	SolidObject();
+	SolidObject(int user, ACL_Color color, int center0, int center1, int angle, int half_length, int half_width, int linear_v, int angular_v);
+	~SolidObject();
+
+protected:
 	void _assign_center(int* center1, const int* center2);
 	void _for_move(int* new_center);
 	void _back_move(int* new_center);
@@ -30,12 +36,8 @@ protected:
 	int _judge_rotate_crash(int next_angle);
 
 public:
-	SolidObject();
-	SolidObject(int user, ACL_Color color, int center0, int center1, int angle, int half_length, int half_width, int linear_v, int angular_v);
-	~SolidObject();
-
 	int get_angle();
-	POINT* get_points();
+	void get_points(POINT* points);
 
 	void move_for_per_time();
 	void move_back_per_time();
