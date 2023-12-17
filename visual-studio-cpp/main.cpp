@@ -39,6 +39,8 @@ int Setup()
 	//窗口大小初始化
 	initWindow("Test", 200, 50, WINDOW_LENGTH, WINDOW_WIDTH);
 	//initConsole();
+	//std::cout << "Tank Turrbuance Copyright(C) 2023 NEAOZ\n";
+	//std::cout << "---------------------------------------\n";
 	//图片加载
 	loadImage(menu_start, &img_start);
 	loadImage(menu_pause, &img_pause);
