@@ -33,15 +33,6 @@ int tank1_bullet_interval;
 int tank2_bullet_interval;
 int tank_destory_interval;
 
-char menu_start[] = "start.bmp";
-char menu_pause[] = "pause.bmp";
-char menu_intro[] = "introduction.bmp";
-char menu_devel[] = "developer.bmp";
-ACL_Image img_start;
-ACL_Image img_pause;
-ACL_Image img_intro;
-ACL_Image img_devel;
-
 int Setup()
 {
 	srand((unsigned int)time(NULL));
@@ -53,6 +44,9 @@ int Setup()
 	loadImage(menu_pause, &img_pause);
 	loadImage(menu_intro, &img_intro);
 	loadImage(menu_devel, &img_devel);
+	loadImage(bott_pause, &img_botto);
+	loadImage(tank_blue, &img_Tankblue);
+	loadImage(tank_green, &img_Tankgreen);
 	//中断使能
 	registerMouseEvent(mouseevent);
 	registerKeyboardEvent(keyevent);
@@ -73,6 +67,9 @@ void timeevent(int timeID)
 			putImage(&img_start, 0, 0);
 			endPaint();
 			 
+			//分数清零
+			Tank::clear_score();
+
 			if (Mouse_MENU_Start == 1)
 			{
 				interface_state = INTERFACE_GAME_INIT;
@@ -149,6 +146,12 @@ void timeevent(int timeID)
 				if (tank2_bullet2.is_exist()) tank2_bullet2.bullet_show();
 				if (tank2_bullet3.is_exist()) tank2_bullet3.bullet_show();
 				if (tank2_bullet4.is_exist()) tank2_bullet4.bullet_show();
+				
+				//tank分数显示
+				Tank::show_score();
+				
+				//pause键显示
+				putImage(&img_botto, 1200, 700);
 
 				endPaint();
 
@@ -156,7 +159,6 @@ void timeevent(int timeID)
 				Key_User1_ENABLE = 1;
 				Key_User2_ENABLE = 1;
 
-				//pause键显示
 				interface_state = INTERFACE_GAME_PLAY;
 				Mouse_PAUSE_CONTINUE = 0;
 			}
@@ -208,12 +210,15 @@ void timeevent(int timeID)
 			tank2 = tank_2;
 			tank2.tank_show();
 
+			//tank分数显示
+			Tank::show_score();
+
 			//用户键盘解锁使用
 			Key_User1_ENABLE = 1;
 			Key_User2_ENABLE = 1;
 
 			//pause键显示
-			rectangle(1200, 700, WINDOW_LENGTH, WINDOW_WIDTH);
+			putImage(&img_botto, 1200, 700);
 
 			endPaint();
 
@@ -332,7 +337,11 @@ void timeevent(int timeID)
 			{
 				if (destory[i] == -1)
 				{
+					//tank分数刷新
+					++tank2_blue_score;
+					Tank::show_score();
 					tank1.tank_unshow();
+					//用户按键禁用归位
 					Key_User1_ENABLE = 0;
 					user1_key_remake();
 					if (tank_destory_interval == -1)
@@ -340,7 +349,11 @@ void timeevent(int timeID)
 				}
 				else if (destory[i] == -2)
 				{
+					//tank分数刷新
+					++tank1_green_score;
+					Tank::show_score();
 					tank2.tank_unshow();
+					//用户按键禁用归位
 					Key_User2_ENABLE = 0;
 					user2_key_remake();
 					if (tank_destory_interval == -1)
@@ -358,7 +371,8 @@ void timeevent(int timeID)
 
 			//一方死亡后游戏倒计时
 			if (tank_destory_interval > 0)	--tank_destory_interval;
-			else if (tank_destory_interval == 0) interface_state = INTERFACE_GAME_INIT;
+			else if (tank_destory_interval == 0) 
+				interface_state = INTERFACE_GAME_INIT;
 
 			//暂停键检测
 			if (Mouse_PLAY_PAUSE == 1)

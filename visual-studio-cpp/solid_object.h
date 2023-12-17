@@ -32,17 +32,10 @@ protected:
 	void _back_move(int* new_center);
 	POINT _point_coordinates(int* center, int angle);
 	void _points_symmetric(POINT* points, int* center, int angle);
-	int _judge_move_crash(int *next_center);
-	int _judge_rotate_crash(int next_angle);
 
 public:
 	int get_angle();
 	void get_points(POINT* points);
-
-	void move_for_per_time();
-	void move_back_per_time();
-	void rotate_CW_per_time();
-	void rotate_CCW_per_time();
 };
 
 #endif

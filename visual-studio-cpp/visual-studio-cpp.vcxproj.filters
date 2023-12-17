@@ -25,6 +25,9 @@
     <Filter Include="img">
       <UniqueIdentifier>{1670af36-b6a6-40f3-b766-7ea7386f1568}</UniqueIdentifier>
     </Filter>
+    <Filter Include="font">
+      <UniqueIdentifier>{7572c6c6-38d9-4a29-9cdc-807555e598aa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -94,5 +97,19 @@
     <Image Include="start.bmp">
       <Filter>img</Filter>
     </Image>
+    <Image Include="blue_tank.bmp">
+      <Filter>img</Filter>
+    </Image>
+    <Image Include="green_tank.bmp">
+      <Filter>img</Filter>
+    </Image>
+    <Image Include="pause_bottom.bmp">
+      <Filter>img</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="SpecialElite.ttf">
+      <Filter>font</Filter>
+    </Font>
   </ItemGroup>
 </Project>

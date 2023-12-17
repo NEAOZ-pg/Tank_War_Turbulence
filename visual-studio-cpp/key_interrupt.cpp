@@ -27,6 +27,39 @@ int Mouse_PAUSE_EXIT = 0;
 int Mouse_PLAY_PAUSE = 0;
 int Mouse_MENU_RETURN = 0;
 
+/**
+  * @brief  清除user1键盘标志
+  * @param  None
+  * @retval None
+  */
+void user1_key_remake()
+{
+	key_A = 0;
+	key_W = 0;
+	key_S = 0;
+	key_D = 0;
+	key_SPACE = 0;
+}
+
+/**
+  * @brief  清除user2键盘标志
+  * @param  None
+  * @retval None
+  */
+void user2_key_remake()
+{
+	key_UP = 0;
+	key_DOWN = 0;
+	key_LEFT = 0;
+	key_RIGHT = 0;
+	key_ENTER = 0;
+}
+
+/**
+  * @brief  键盘事件判断
+  * @param  见ACCLIB
+  * @retval 见ACCLIB
+  */
 void keyevent(int key, int event)
 {
 	if (event == KEY_DOWN)
@@ -63,24 +96,11 @@ void keyevent(int key, int event)
 	}
 }
 
-void user1_key_remake()
-{
-	key_A = 0;
-	key_W = 0;
-	key_S = 0;
-	key_D = 0;
-	key_SPACE = 0;
-}
-
-void user2_key_remake()
-{
-	key_UP = 0;
-	key_DOWN = 0;
-	key_LEFT = 0;
-	key_RIGHT = 0;
-	key_ENTER = 0;
-}
-
+/**
+  * @brief  鼠标事件判断
+  * @param  见ACCLIB
+  * @retval 见ACCLIB
+  */
 void mouseevent(int x, int y, int button, int event)
 {
 	if (button == LEFT_BUTTON)
