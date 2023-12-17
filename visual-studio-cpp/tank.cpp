@@ -50,38 +50,11 @@ POINT* Tank::_points_cannon(POINT* points)
 	return cannon;
 }
 
-/*
-int SolidObject::_judge_crash()
-{
-	POINT points[4];
-	_points_symmetric((points));
-
-
-	//判断除了撞上子弹的一切。
-	/*
-	可以使用的变量：
-	int new_center[2]	//相对window窗口，即在windowinit（）创建的窗口左上角为原点（0，0）
-	int angle, int half_length, int half_width（可能用不到）
-
-	上面的两句，获得的points 结构体长这样
-	typedef struct tagPOINT
-	{
-		LONG  x;
-		LONG  y;
-	} POINT,
-	存四个角的x和y。
-	顺序（当坦克朝向右边的时候）：按照逆时针：右上角，左上角，左下角，右下角。
-
-	ACL_Color getPixel(int x, int y);（函数原型在acclib.h中
-	返回颜色，只要不是白色（什么都没有）和（GREY：子弹）都算是碰到边界
-											（子弹暂时不考虑）
-
-	返回值，0：不是边界，1，边界在上面撞到，2，边界在下面撞到
-					3，边界在左面撞到，4，边界在下面撞到
-
-
-	return 0;
-}*/
+/**
+  * @brief  判断坦克前后移动，并改变_center
+  * @param  next_center：理想的下一个位置
+  * @retval None
+  */
 int Tank::_judge_move_crash(int* next_center)
 {
 	ACL_Color target;
@@ -100,7 +73,7 @@ int Tank::_judge_move_crash(int* next_center)
 	else sign = -1;
 	if (next_center[0] != _center[0])
 	{
-		coefficient = (next_center[1] - _center[1]) / (next_center[0] - _center[0]);
+		coefficient = (round)(next_center[1] - _center[1]) / (next_center[0] - _center[0]);
 		if (next_center[0] > _center[0])
 			slope = 1;
 		else slope = -1;
@@ -121,16 +94,16 @@ int Tank::_judge_move_crash(int* next_center)
 	for (i = 0; i <= abs(next_center[0] - _center[0]); ++i)
 	{
 		process_center[0] = process_center[0] + slope;
-		process_center[1] = process_center[1] + sign * (int)(coefficient);
+		process_center[1] = process_center[1] + sign * (round)(coefficient);
 		for (j = 0; j < 4; ++j)
 		{
 			process_point[j].x = process_point[j].x + slope;
-			process_point[j].y = process_point[j].y + sign * (int)(coefficient);
+			process_point[j].y = process_point[j].y + sign * (round)(coefficient);
 			target = getPixel(process_point[j].x, process_point[j].y);
 			if ((target == BLACK) || (target == BLUE) || (target == GREEN))
 			{
 				_center[0] = process_center[0] - slope;
-				_center[1] = process_center[1] - sign * (int)(coefficient);
+				_center[1] = process_center[1] - sign * (round)(coefficient);
 				return 1;
 			}
 		}
@@ -140,6 +113,11 @@ int Tank::_judge_move_crash(int* next_center)
 	return 0;
 }
 
+/**
+  * @brief  判断坦克旋转，并改变_angle
+  * @param  next_angle：理想的下一个旋转位置
+  * @retval None
+  */
 int Tank::_judge_rotate_crash(int next_angle)
 {
 	//_angular_v=next_angle-_angle;
@@ -148,13 +126,13 @@ int Tank::_judge_rotate_crash(int next_angle)
 	ACL_Color target;
 	POINT origin_points[4];
 	_points_symmetric(origin_points, _center, _angle);
-	POINT process_points[5];//用于取点判断
-	POINT judge_points[5];//用于判断边的坐标
+	POINT judge_points[5];//用于判断的坐标
 	POINT next_points[4];
+	POINT process_points[5];
+	int sign[5];
+	int coefficient[5], slope[5];
 	_points_symmetric(next_points, _center, next_angle);
-	int sign[4];//取点方向
-	int coefficient[4], slope[4];//y方向改变量，x方向改变量；
-	int i, j;//循环控制变量
+	int i, j, k;//循环控制变量
 	for (i = 0; i < 5; ++i)
 	{
 		if (i == 4)
@@ -174,7 +152,7 @@ int Tank::_judge_rotate_crash(int next_angle)
 		else sign[i] = -1;
 		if (next_points[i].x != next_points[i + 1].x)
 		{
-			coefficient[i] = (next_points[i + 1].y - next_points[i].y) / (next_points[i + 1].x - next_points[i].x);
+			coefficient[i] = (round)(next_points[i + 1].y - next_points[i].y) / (next_points[i + 1].x - next_points[i].x);
 			if (next_points[i + 1].x > next_points[i].x)
 				slope[i] = 1;
 			else slope[i] = -1;
@@ -198,7 +176,7 @@ int Tank::_judge_rotate_crash(int next_angle)
 		for (j = 0; j <= abs(process_points[i + 1].x - process_points[i].x); ++j)
 		{
 			process_points[i].x = process_points[i].x + slope[i];
-			process_points[i].y = process_points[i].y + sign[i] * (int)(coefficient[i]);
+			process_points[i].y = process_points[i].y + sign[i] * (round)(coefficient[i]);
 			target = getPixel(process_points[i].x, process_points[i].y);
 			if ((target == BLACK) || (target == BLUE) || (target == GREEN))
 				return 1;
