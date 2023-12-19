@@ -54,6 +54,7 @@ POINT* Tank::_points_cannon(POINT* points)
   * @brief  判断坦克前后移动，并改变_center
   * @param  next_center：理想的下一个位置
   * @retval None
+  * @author WangaQingyu
   */
 int Tank::_judge_move_crash(int* next_center)
 {
@@ -117,12 +118,13 @@ int Tank::_judge_move_crash(int* next_center)
   * @brief  判断坦克旋转，并改变_angle
   * @param  next_angle：理想的下一个旋转位置
   * @retval None
+  * @author WangaQingyu
   */
 int Tank::_judge_rotate_crash(int next_angle)
 {
 	//_angular_v=next_angle-_angle;
-	//这个函数只模拟旋转一次十度的情况
-	//_angle,_center,origin_points已知
+//这个函数只模拟旋转一次十五度的情况
+//_angle,_center,origin_points已知
 	ACL_Color target;
 	POINT origin_points[4];
 	_points_symmetric(origin_points, _center, _angle);
@@ -145,41 +147,15 @@ int Tank::_judge_rotate_crash(int next_angle)
 		judge_points[i].y = next_points[i].y;
 	}
 	//
-	for (i = 0; i < 4; ++i)
+	for (i = 0; i < 5; ++i)
 	{
-		if (judge_points[i + 1].x >= judge_points[i].x)
-			sign[i] = 1;
-		else sign[i] = -1;
-		if (next_points[i].x != next_points[i + 1].x)
+		target = getPixel(judge_points[i].x, judge_points[i].y);
+		if ((target == BLACK) || (target == BLUE) || (target == GREEN))
 		{
-			coefficient[i] = (round)(next_points[i + 1].y - next_points[i].y) / (next_points[i + 1].x - next_points[i].x);
-			if (next_points[i + 1].x > next_points[i].x)
-				slope[i] = 1;
-			else slope[i] = -1;
-		}
-		else {
-			slope[i] = 0;
-			if (next_points[i + 1].y > next_points[i].y)
-				coefficient[i] = 1;
-			else coefficient[i] = -1;
-		}//确定斜率
-	}
-
-	for (j = 0; j < 5; ++j)
-	{
-		process_points[j].x = judge_points[j].x;
-		process_points[j].y = judge_points[j].y;
-	}//先把过程变量与小车初始状态对齐
-
-	for (i = 0; i <= 4; ++i)
-	{
-		for (j = 0; j <= abs(process_points[i + 1].x - process_points[i].x); ++j)
-		{
-			process_points[i].x = process_points[i].x + slope[i];
-			process_points[i].y = process_points[i].y + sign[i] * (round)(coefficient[i]);
-			target = getPixel(process_points[i].x, process_points[i].y);
-			if ((target == BLACK) || (target == BLUE) || (target == GREEN))
-				return 1;
+			if (next_angle > _angle)
+				_angle = _angle - 15;
+			else _angle = _angle + 15;
+			return 1;
 		}
 	}
 	_angle = next_angle;
@@ -262,8 +238,8 @@ void Tank::move_back_per_time()
   */
 void Tank::rotate_CW_per_time()
 {
-	_angle += _angular_v;
-	//_judge_rotate_crash(_angle + _angular_v);
+	//_angle += _angular_v;
+	_judge_rotate_crash(_angle + _angular_v);
 }
 
 /**
@@ -273,8 +249,8 @@ void Tank::rotate_CW_per_time()
   */
 void Tank::rotate_CCW_per_time()
 {
-	_angle -= _angular_v;
-	//_judge_rotate_crash(_angle - _angular_v);
+	//_angle -= _angular_v;
+	_judge_rotate_crash(_angle - _angular_v);
 }
 
 

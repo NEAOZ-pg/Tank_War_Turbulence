@@ -54,12 +54,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\25836\Desktop\tank_war\visual-studio-cpp\src;C:\Users\25836\Desktop\tank_war\visual-studio-cpp\img;C:\Users\25836\Desktop\tank_war\visual-studio-cpp;C:\Users\25836\Desktop\tank_war\visual-studio-cpp\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <ConformanceMode>Default</ConformanceMode>
       <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <LanguageStandard>Default</LanguageStandard>
+      <AdditionalIncludeDirectories>C:\Users\25836\Desktop\Tank_Turbulence\visual-studio-cpp\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -80,8 +80,8 @@
       <ConformanceMode>Default</ConformanceMode>
       <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <AdditionalIncludeDirectories>C:\Users\25836\Desktop\tank_war\visual-studio-cpp\src;C:\Users\25836\Desktop\tank_war\visual-studio-cpp\img;</AdditionalIncludeDirectories>
       <LanguageStandard>Default</LanguageStandard>
+      <AdditionalIncludeDirectories>C:\Users\25836\Desktop\Tank_Turbulence\visual-studio-cpp\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
