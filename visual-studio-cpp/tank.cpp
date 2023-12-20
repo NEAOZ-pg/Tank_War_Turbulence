@@ -1,13 +1,27 @@
-#include <Windows.h>
-#include <stdlib.h>
+#define _CRT_NONSTDC_NO_DEPRECATE
+#define _CRT_SECURE_NO_WARNINGS
 
 #include "tank.h"
 
-#include "acllib.h"
-#include "wall_map.h"
+#include <stdlib.h>
+#include "global_param.h"
 
-Tank::Tank(int user, int* center, int angle, int half_length, int half_width, int speed) :
-	SolidObject(user, center, angle, half_length, half_width, speed)
+#define TANK_LENGTH		25
+#define TANK_WIDTH		15
+#define TANK_LINEAR_V	9
+#define TANK_ANGULAR_V	15
+
+int tank1_green_score = 0;
+int tank2_blue_score = 0;
+
+//INIT
+
+Tank::Tank()
+{
+}
+
+Tank::Tank(int user, ACL_Color color, int* center, int angle) :
+	SolidObject(user, color, center[0], center[1], angle, TANK_LENGTH, TANK_WIDTH, TANK_LINEAR_V, TANK_ANGULAR_V)
 {
 }
 
@@ -16,57 +30,288 @@ Tank::~Tank()
 }
 
 //private
-POINT* Tank::_get_point(WallMap my_map)
+
+/**
+  * @brief  计算坦克炮管的四个角地址
+  * @param  point:用于存放炮管四个角位置
+  * @retval None
+  */
+POINT* Tank::_points_cannon(POINT* points)
 {
-	POINT point[4];
-
-	int i = 0;
-	int move[4][2] =
-	{
-		{_half_length , _half_width},
-		{_half_length , -_half_width},
-		{-_half_length ,-_half_width},
-		{-_half_length , _half_width},
-	};
-
-	for (i = 0; i < 4; i++)
-	{
-		point[i].x = _center[0] + move[i][0] + my_map.get_axis_x();
-		point[i].y = _center[1] + move[i][1] + my_map.get_axis_y();
-	}
-
-	return point;
-}
-
-//public
-void Tank::tank_unshow(WallMap my_map)
-{
-	setPenColor(EMPTY);
-	setBrushColor(WHITE);
-	setBrushStyle(BRUSH_STYLE_SOLID);
-	polygon(_get_point(my_map), 4);
-}
-
-void Tank::tank_show(WallMap my_map,ACL_Color color)
-{
-	setPenColor(EMPTY);
-	setBrushColor(color);
-	setBrushStyle(BRUSH_STYLE_SOLID);
-	polygon(_get_point(my_map), 4);
+	POINT cannon[4];
+	cannon[0].x = (points[0].x * 2 + points[3].x) / 3;
+	cannon[0].y = (points[0].y * 2 + points[3].y) / 3;
+	cannon[1].x = (points[3].x * 2 + points[0].x) / 3;
+	cannon[1].y = (points[3].y * 2 + points[0].y) / 3;
+	cannon[2].x = _center[0] + (cannon[1].x - cannon[0].x) / 2;
+	cannon[2].y = _center[1] + (cannon[1].y - cannon[0].y) / 2;
+	cannon[3].x = _center[0] + (cannon[0].x - cannon[1].x) / 2;
+	cannon[3].y = _center[1] + (cannon[0].y - cannon[1].y) / 2;
+	return cannon;
 }
 
 /**
-  * @brief  随机生成center的位置
+  * @brief  判断坦克前后移动，并改变_center
+  * @param  next_center：理想的下一个位置
+  * @retval None
+  * @author WangaQingyu
+  */
+int Tank::_judge_move_crash(int* next_center)
+{
+	ACL_Color target;
+	POINT origin_points[4];
+	_points_symmetric(origin_points, _center, _angle);
+	int process_center[2];//循环过程中心坐标
+	POINT process_point[4];//循环过程四个角
+	POINT next_points[4];
+	_points_symmetric(next_points, next_center, _angle);
+	int i, j;//建立循环
+	float coefficient;
+	int slope;//斜率
+	int sign;//正负
+	if (next_center[0] >= _center[0])
+		sign = 1;
+	else sign = -1;
+	if (next_center[0] != _center[0])
+	{
+		coefficient = (round)(next_center[1] - _center[1]) / (next_center[0] - _center[0]);
+		if (next_center[0] > _center[0])
+			slope = 1;
+		else slope = -1;
+	}
+	else {
+		slope = 0;
+		if (next_center[1] > _center[1])
+			coefficient = 1;
+		else coefficient = -1;
+	}//确定斜率
+	process_center[0] = _center[0];
+	process_center[1] = _center[1];
+	for (j = 0; j < 4; ++j)
+	{
+		process_point[j].x = origin_points[j].x;
+		process_point[j].y = origin_points[j].y;
+	}//先把过程变量与小车初始状态对齐
+	for (i = 0; i <= abs(next_center[0] - _center[0]); ++i)
+	{
+		process_center[0] = process_center[0] + slope;
+		process_center[1] = process_center[1] + sign * (round)(coefficient);
+		for (j = 0; j < 4; ++j)
+		{
+			process_point[j].x = process_point[j].x + slope;
+			process_point[j].y = process_point[j].y + sign * (round)(coefficient);
+			target = getPixel(process_point[j].x, process_point[j].y);
+			if ((target == BLACK) || (target == BLUE) || (target == GREEN))
+			{
+				_center[0] = process_center[0] - slope;
+				_center[1] = process_center[1] - sign * (round)(coefficient);
+				return 1;
+			}
+		}
+	}
+	_center[0] = next_center[0];
+	_center[1] = next_center[1];//中途没有撞墙，移动正常，传递位置
+	return 0;
+}
+
+/**
+  * @brief  判断坦克旋转，并改变_angle
+  * @param  next_angle：理想的下一个旋转位置
+  * @retval None
+  * @author WangaQingyu
+  */
+int Tank::_judge_rotate_crash(int next_angle)
+{
+	//_angular_v=next_angle-_angle;
+//这个函数只模拟旋转一次十五度的情况
+//_angle,_center,origin_points已知
+	ACL_Color target;
+	POINT origin_points[4];
+	_points_symmetric(origin_points, _center, _angle);
+	POINT judge_points[5];//用于判断的坐标
+	POINT next_points[4];
+	POINT process_points[5];
+	int sign[5];
+	int coefficient[5], slope[5];
+	_points_symmetric(next_points, _center, next_angle);
+	int i, j, k;//循环控制变量
+	for (i = 0; i < 5; ++i)
+	{
+		if (i == 4)
+		{
+			judge_points[i].x = next_points[0].x;
+			judge_points[i].y = next_points[0].y;
+			break;
+		}
+		judge_points[i].x = next_points[i].x;
+		judge_points[i].y = next_points[i].y;
+	}
+	//
+	for (i = 0; i < 5; ++i)
+	{
+		target = getPixel(judge_points[i].x, judge_points[i].y);
+		if ((target == BLACK) || (target == BLUE) || (target == GREEN))
+		{
+			if (next_angle > _angle)
+				_angle = _angle - 15;
+			else _angle = _angle + 15;
+			return 1;
+		}
+	}
+	_angle = next_angle;
+	return 0;
+}
+
+//public
+
+/**
+  * @brief  清除上一次坦克位置显示
+  * @param  None
+  * @retval None
+  */
+void Tank::tank_unshow()
+{
+	setPenColor(WHITE);
+	setPenWidth(0);
+	setBrushColor(WHITE);
+	setBrushStyle(BRUSH_STYLE_SOLID);
+	//擦除坦克机身
+	POINT points[4];
+	_points_symmetric(points, _center, _angle);
+	polygon(points, 4);
+	//擦除坦克炮管（上一次可能擦除不完全）
+	polygon(_points_cannon(points), 4);
+}
+
+/**
+  * @brief  坦克位置显示
+  * @param  None
+  * @retval None
+  */
+void Tank::tank_show()
+{
+	setPenColor(EMPTY);
+	setPenWidth(0);
+	setBrushColor(_color);
+	setBrushStyle(BRUSH_STYLE_SOLID);
+	//显示坦克机身
+	POINT points[4];
+	_points_symmetric(points, _center, _angle);
+	polygon(points, 4);
+	//显示坦克炮管（偷懒了就都是红色）
+	setBrushColor(RED);
+	polygon(_points_cannon(points), 4);
+}
+
+/**
+  * @brief  向前移动
+  * @param  None
+  * @retval None
+  */
+void Tank::move_for_per_time()
+{
+	//_for_move(_center);
+
+	int next_center[2];
+	_for_move(next_center);
+	_judge_move_crash(next_center);
+}
+
+/**
+  * @brief  向后移动
+  * @param  None
+  * @retval None
+  */
+void Tank::move_back_per_time()
+{
+	//_back_move(_center);
+
+	int next_center[2];
+	_back_move(next_center);
+	_judge_move_crash(next_center);
+}
+
+/**
+  * @brief  顺时针（clockwise）旋转
+  * @param  None
+  * @retval None
+  */
+void Tank::rotate_CW_per_time()
+{
+	//_angle += _angular_v;
+	_judge_rotate_crash(_angle + _angular_v);
+}
+
+/**
+  * @brief  逆时针（counterclockwise）旋转
+  * @param  None
+  * @retval None
+  */
+void Tank::rotate_CCW_per_time()
+{
+	//_angle -= _angular_v;
+	_judge_rotate_crash(_angle - _angular_v);
+}
+
+
+/**
+  * @brief  随机生成tank的位置,位于每一个地图块的中央
   * @param  my_map : wallmap
   * @retval random_center[2]
   */
-int* random_coordinate(WallMap my_map)
+int* Tank::random_coordinate(WallMap my_map)
 {
 	int random_c[2];
-	
-	random_c[0] = rand() % (my_map.get_length() - 1) * UNIT_LENGTH + UNIT_LENGTH / 2;
-
-	random_c[1] = rand() % (my_map.get_width() - 1) * UNIT_LENGTH + UNIT_LENGTH / 2;
+	do
+	{
+		random_c[0] = rand() % (my_map.get_length() - 1) * UNIT_LENGTH + UNIT_LENGTH / 2 + my_map.get_axis_x();
+		random_c[1] = rand() % (my_map.get_width() - 1) * UNIT_LENGTH + UNIT_LENGTH / 2 + my_map.get_axis_y();
+	} while (getPixel(random_c[0], random_c[1]) != WHITE);
 
 	return random_c;
+}
+
+/**
+  * @brief  随机生成angle(0,90,180,270)
+  * @param  None
+  * @retval angle
+  */
+int Tank::random_angle()
+{
+	return rand() % 4 * 90;
+}
+
+/**
+  * @brief  显示tank分数
+  * @param  None
+  * @retval None
+  */
+void Tank::show_score()
+{
+	putImage(&img_Tankblue, 800, 700);
+	putImage(&img_Tankgreen, 300, 700);
+
+	setTextColor(GREY);
+	setTextBkColor(WHITE);
+	setTextSize(32);
+	setTextFont(font_name);
+
+	//int -> string
+	char int_str[10];
+	itoa(tank1_green_score, int_str, 10);
+	paintText(420, 740, int_str);
+
+	itoa(tank2_blue_score, int_str, 10);
+	paintText(760, 740, int_str);
+}
+
+/**
+  * @brief  清除
+  * @param  None
+  * @retval None
+  */
+void Tank::clear_score()
+{
+	tank1_green_score = 0;
+	tank2_blue_score = 0;
 }

@@ -54,7 +54,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\25836\Desktop\tank_war\visual-studio-cpp;C:\Users\25836\Desktop\tank_war\visual-studio-cpp\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <ConformanceMode>Default</ConformanceMode>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <LanguageStandard>Default</LanguageStandard>
+      <AdditionalIncludeDirectories>C:\Users\25836\Desktop\Tank_Turbulence\visual-studio-cpp\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -71,6 +76,12 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <ConformanceMode>Default</ConformanceMode>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <LanguageStandard>Default</LanguageStandard>
+      <AdditionalIncludeDirectories>C:\Users\25836\Desktop\Tank_Turbulence\visual-studio-cpp\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -81,16 +92,36 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\acllib.cpp" />
+    <ClCompile Include="bullet.cpp" />
+    <ClCompile Include="global_param.cpp" />
+    <ClCompile Include="key_interrupt.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="map_create.cpp" />
     <ClCompile Include="tank.cpp" />
     <ClCompile Include="wall_map.cpp" />
     <ClCompile Include="solid_object.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\acllib.h" />
+    <ClInclude Include="bullet.h" />
+    <ClInclude Include="global_param.h" />
+    <ClInclude Include="key_interrupt.h" />
+    <ClInclude Include="map_create.h" />
     <ClInclude Include="tank.h" />
     <ClInclude Include="wall_map.h" />
     <ClInclude Include="solid_object.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="blue_tank.bmp" />
+    <Image Include="developer.bmp" />
+    <Image Include="green_tank.bmp" />
+    <Image Include="introduction.bmp" />
+    <Image Include="pause.bmp" />
+    <Image Include="pause_bottom.bmp" />
+    <Image Include="start.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="SpecialElite.ttf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

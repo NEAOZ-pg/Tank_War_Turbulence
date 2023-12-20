@@ -7,19 +7,36 @@
 #include "acllib.h"
 #include "wall_map.h"
 
-class Tank:public SolidObject
-{
-private:
-	POINT* _get_point(WallMap my_map);
+#define TANK1_COLOR GREEN
+#define TANK2_COLOR BLUE
 
+extern int tank1_green_score;
+extern int tank2_blue_score;
+
+class Tank :public SolidObject
+{
 public:
-	Tank(int user, int* center, int angle, int length, int width, int speed);
+	Tank();
+	Tank(int user, ACL_Color color, int* center, int angle);
 	~Tank();
 
-	void tank_unshow(WallMap my_map);
-	void tank_show(WallMap my_map, ACL_Color color);
-};
+private:
+	POINT* _points_cannon(POINT* points);
+	int _judge_move_crash(int* next_center);
+	int _judge_rotate_crash(int next_angle);
 
-int* random_coordinate(WallMap my_map);
+public:
+	void tank_unshow();
+	void tank_show();
+	void move_for_per_time();
+	void move_back_per_time();
+	void rotate_CW_per_time();
+	void rotate_CCW_per_time();
+
+	static int* random_coordinate(WallMap my_map);
+	static int random_angle();
+	static void show_score();
+	static void clear_score();
+};
 
 #endif

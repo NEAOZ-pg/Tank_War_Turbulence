@@ -3,4 +3,6 @@
 ## UESTC 大一上C期末实验 
 
 ---
-具体内容阅读 `Development Documents`
+剩余王庆宇部分  
+  
+可以做剩下的活了  

@@ -16,6 +16,18 @@
     <Filter Include="src">
       <UniqueIdentifier>{38e61c86-97d8-41ab-8c85-28fd243f1fa6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="utility files">
+      <UniqueIdentifier>{92da866d-6c32-423a-9927-a2b94bdcfb83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interrput">
+      <UniqueIdentifier>{5c62add0-9b8e-4e08-b932-028efe971131}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="img">
+      <UniqueIdentifier>{1670af36-b6a6-40f3-b766-7ea7386f1568}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="font">
+      <UniqueIdentifier>{7572c6c6-38d9-4a29-9cdc-807555e598aa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -33,6 +45,18 @@
     <ClCompile Include="tank.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="key_interrupt.cpp">
+      <Filter>interrput</Filter>
+    </ClCompile>
+    <ClCompile Include="global_param.cpp">
+      <Filter>utility files</Filter>
+    </ClCompile>
+    <ClCompile Include="bullet.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="map_create.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\acllib.h">
@@ -47,5 +71,45 @@
     <ClInclude Include="tank.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="key_interrupt.h">
+      <Filter>interrput</Filter>
+    </ClInclude>
+    <ClInclude Include="global_param.h">
+      <Filter>utility files</Filter>
+    </ClInclude>
+    <ClInclude Include="bullet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="map_create.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="pause.bmp">
+      <Filter>img</Filter>
+    </Image>
+    <Image Include="developer.bmp">
+      <Filter>img</Filter>
+    </Image>
+    <Image Include="introduction.bmp">
+      <Filter>img</Filter>
+    </Image>
+    <Image Include="start.bmp">
+      <Filter>img</Filter>
+    </Image>
+    <Image Include="blue_tank.bmp">
+      <Filter>img</Filter>
+    </Image>
+    <Image Include="green_tank.bmp">
+      <Filter>img</Filter>
+    </Image>
+    <Image Include="pause_bottom.bmp">
+      <Filter>img</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="SpecialElite.ttf">
+      <Filter>font</Filter>
+    </Font>
   </ItemGroup>
 </Project>
