@@ -16,6 +16,15 @@
 
 ---
 
+## 0. About Developer
+- NEAOZ 负责所有代码部分
+- WangQyu 曾写过两个tank_judge函数，明确作业要求后被NEAOZ REWRITE
+- PengYtong 绘制`introduction.bmp`和`developer.bmp`,暂且懒得改了
+- PengYtong 原本负责开发菜单，由于没有使用ACCLIB，而且平台为x64，遂舍弃
+- WangQyu 和 PengYtong 会有自己的程序作业
+
+---
+
 ## 1. 游戏介绍    
 
 双人射击游戏，玩家1玩家2可以分别操控绿、蓝两辆坦克，对敌方进行射击，射击出的子弹具有反弹功能。   
