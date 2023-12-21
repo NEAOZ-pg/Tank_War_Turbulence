@@ -22,6 +22,7 @@ public:
 
 private:
 	POINT* _points_cannon(POINT* points);
+	int _judge_state(POINT* points);
 	int _judge_move_crash(int* next_center);
 	int _judge_rotate_crash(int next_angle);
 

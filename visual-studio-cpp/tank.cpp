@@ -51,66 +51,57 @@ POINT* Tank::_points_cannon(POINT* points)
 }
 
 /**
+  * @brief  判断某一状态tank是否碰撞
+  * @param  points：改状态的四个角的坐标
+  * @retval 1：crash  2：uncrash
+  */
+int Tank::_judge_state(POINT* points)
+{
+	int x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+	int x = 0, y = 0;
+	int i = 0, j = 0;
+	for (i = 0; i < 4; i++)
+	{
+		x1 = points[i % 4].x;
+		y1 = points[i % 4].y;
+		x2 = points[(i + 1) % 4].x;
+		y2 = points[(i + 1) % 4].y;
+		for (j = 0; j < 10; j++)
+		{
+			x = round((x1 * j + x2 * (10 - j)) / 10.0);
+			y = round((y1 * j + y2 * (10 - j)) / 10.0);
+			if (getPixel(x, y) != WHITE)
+				return 1;
+		}
+	}
+	return 0;
+}
+
+/**
   * @brief  判断坦克前后移动，并改变_center
   * @param  next_center：理想的下一个位置
   * @retval None
-  * @author WangaQingyu
   */
 int Tank::_judge_move_crash(int* next_center)
 {
-	ACL_Color target;
-	POINT origin_points[4];
-	_points_symmetric(origin_points, _center, _angle);
-	int process_center[2];//循环过程中心坐标
-	POINT process_point[4];//循环过程四个角
-	POINT next_points[4];
-	_points_symmetric(next_points, next_center, _angle);
-	int i, j;//建立循环
-	float coefficient;
-	int slope;//斜率
-	int sign;//正负
-	if (next_center[0] >= _center[0])
-		sign = 1;
-	else sign = -1;
-	if (next_center[0] != _center[0])
+	int i = 0;
+	int state_center[2];
+	int pre_center[4];
+	_assign_center(state_center, _center);
+	_assign_center(pre_center, _center);
+	POINT state_points[4];
+	for (i = 1; i <= _linear_v; i++)
 	{
-		coefficient = (round)(next_center[1] - _center[1]) / (next_center[0] - _center[0]);
-		if (next_center[0] > _center[0])
-			slope = 1;
-		else slope = -1;
+		state_center[0] = round((_center[0] * (_linear_v - i) 
+			+ next_center[0] * i) / (double)_linear_v);
+		state_center[1] = round((_center[1] * (_linear_v - i)
+			+ next_center[1] * i) / (double)_linear_v);
+		_points_symmetric(state_points, state_center, _angle);
+		if (_judge_state(state_points))
+			break;
+		_assign_center(pre_center, state_center);
 	}
-	else {
-		slope = 0;
-		if (next_center[1] > _center[1])
-			coefficient = 1;
-		else coefficient = -1;
-	}//确定斜率
-	process_center[0] = _center[0];
-	process_center[1] = _center[1];
-	for (j = 0; j < 4; ++j)
-	{
-		process_point[j].x = origin_points[j].x;
-		process_point[j].y = origin_points[j].y;
-	}//先把过程变量与小车初始状态对齐
-	for (i = 0; i <= abs(next_center[0] - _center[0]); ++i)
-	{
-		process_center[0] = process_center[0] + slope;
-		process_center[1] = process_center[1] + sign * (round)(coefficient);
-		for (j = 0; j < 4; ++j)
-		{
-			process_point[j].x = process_point[j].x + slope;
-			process_point[j].y = process_point[j].y + sign * (round)(coefficient);
-			target = getPixel(process_point[j].x, process_point[j].y);
-			if ((target == BLACK) || (target == BLUE) || (target == GREEN))
-			{
-				_center[0] = process_center[0] - slope;
-				_center[1] = process_center[1] - sign * (round)(coefficient);
-				return 1;
-			}
-		}
-	}
-	_center[0] = next_center[0];
-	_center[1] = next_center[1];//中途没有撞墙，移动正常，传递位置
+	_assign_center(_center, pre_center);
 	return 0;
 }
 
@@ -118,47 +109,52 @@ int Tank::_judge_move_crash(int* next_center)
   * @brief  判断坦克旋转，并改变_angle
   * @param  next_angle：理想的下一个旋转位置
   * @retval None
-  * @author WangaQingyu
   */
 int Tank::_judge_rotate_crash(int next_angle)
 {
-	//_angular_v=next_angle-_angle;
-//这个函数只模拟旋转一次十五度的情况
-//_angle,_center,origin_points已知
-	ACL_Color target;
-	POINT origin_points[4];
-	_points_symmetric(origin_points, _center, _angle);
-	POINT judge_points[5];//用于判断的坐标
-	POINT next_points[4];
-	POINT process_points[5];
-	int sign[5];
-	int coefficient[5], slope[5];
-	_points_symmetric(next_points, _center, next_angle);
-	int i, j, k;//循环控制变量
-	for (i = 0; i < 5; ++i)
+	int i = 0;
+	int state_angle = _angle;
+	int pre_angle = _angle;
+	POINT state_points[4];
+	int add_or_sub = next_angle - _angle > 0 ? 1 : -1;
+	int judge = 0;
+	for (i = 0; i <= _angular_v; i++)
 	{
-		if (i == 4)
-		{
-			judge_points[i].x = next_points[0].x;
-			judge_points[i].y = next_points[0].y;
+		state_angle = state_angle + add_or_sub;
+		_points_symmetric(state_points, _center, state_angle);
+		if (judge = _judge_state(state_points))
 			break;
-		}
-		judge_points[i].x = next_points[i].x;
-		judge_points[i].y = next_points[i].y;
+		pre_angle = state_angle;
 	}
-	//
-	for (i = 0; i < 5; ++i)
-	{
-		target = getPixel(judge_points[i].x, judge_points[i].y);
-		if ((target == BLACK) || (target == BLUE) || (target == GREEN))
+
+	//让tank的角度在正常情况下回归为_angular_v的倍数
+	int c_angle = state_angle, cc_angle = state_angle;
+	state_angle = state_angle + add_or_sub;
+	_points_symmetric(state_points, _center, state_angle);
+	if (!(judge || _judge_state(state_points)))
+		while (1)
 		{
-			if (next_angle > _angle)
-				_angle = _angle - 15;
-			else _angle = _angle + 15;
-			return 1;
+			if (c_angle / _angular_v * _angular_v == c_angle)
+			{
+				_points_symmetric(state_points, _center, c_angle);
+				if (!_judge_state(state_points))
+				{
+					_angle = c_angle;
+					break;
+				}
+			}
+			else if(cc_angle / _angular_v * _angular_v == cc_angle)
+			{
+				_points_symmetric(state_points, _center, cc_angle);
+				if (!_judge_state(state_points))
+				{
+					_angle = cc_angle;
+					break;
+				}
+			}
+			++c_angle;
+			--cc_angle;
 		}
-	}
-	_angle = next_angle;
 	return 0;
 }
 
