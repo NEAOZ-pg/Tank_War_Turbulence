@@ -159,7 +159,6 @@ void WallMap::_wallmap_showframe()
 		_axis_x + UNIT_LENGTH * _length + UNIT_LINE, _axis_y + UNIT_LENGTH * _width + UNIT_LINE);
 }
 
-
 //public
 
 int WallMap::get_axis_x()

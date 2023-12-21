@@ -286,6 +286,14 @@ void Bullet::_bullet_unshow()
   				-1：TANK1（USER1）	-2：TANK2（USER2）
 				0：None
   */
+
+/**
+  * @brief  判断某一状态tank是否碰撞
+  * @param  points：改状态的四个角的坐标
+  * @retval 1：crash  2：uncrash
+  */
+int Tank::_judge_state(POINT* points)；
+
 int Bullet::_bullet_state_judge(int* center)；
 
 /**

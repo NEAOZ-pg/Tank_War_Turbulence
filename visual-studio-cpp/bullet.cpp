@@ -12,6 +12,8 @@ Bullet::Bullet(int user) :
 {
 }
 
+//private
+
 /**
   * @brief  清除上一次的子弹位置显示
   * @param  None

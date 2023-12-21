@@ -135,7 +135,8 @@ void map_random_delete(int*** map, int* x_pos, int* y_pos, int* orient, int* x_n
 		*y_pos = rand() % length;
 		*orient = rand() % 4;
 	} while ((*x_pos == 0 && *orient == 0) || (*x_pos == width - 1 && *orient == 1) ||
-		(*y_pos == 0 && *orient == 2) || (*y_pos == length - 1 && *orient == 3) || map[*x_pos][*y_pos][*orient] == 0);
+		(*y_pos == 0 && *orient == 2) || (*y_pos == length - 1 && *orient == 3) 
+		|| map[*x_pos][*y_pos][*orient] == 0);
 
 	*x_nxt = *x_pos;
 	*y_nxt = *y_pos;

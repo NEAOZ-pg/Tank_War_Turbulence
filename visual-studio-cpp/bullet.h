@@ -11,7 +11,7 @@ class Bullet :public SolidObject
 {
 private:
 	int _is_use;	//1,using ,0 unused 
-	int _survive_time;
+	int _survive_time;	//子弹存活时间
 
 public:
 	Bullet(int user);
