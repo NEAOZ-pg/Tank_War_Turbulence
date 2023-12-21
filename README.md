@@ -4,9 +4,11 @@
 
 ### 作者 NEAOZ    
 
+作者能力有限，文档或有纰漏
+
 ---
 
-### 摘要
+### 摘要    
 
 《动荡坦克》原是是“射击”类游戏的一个flash小游戏，本实验在win32平台，基于C++和ACCLIB，混用了面向对象和面向过程实现了坦克，地图，地图元素，尽可能地对游戏的双人模式进行基本复刻。    
 
@@ -14,56 +16,62 @@
 
 ---
 
-## 1. 游戏介绍
+## 1. 游戏介绍    
 
 双人射击游戏，玩家1玩家2可以分别操控绿、蓝两辆坦克，对敌方进行射击，射击出的子弹具有反弹功能。   
+
 玩家1操作 WSAD和SPACE进行上下移动，左右旋转和向前射击    
 玩家2操作 ↑↓←→和ENTER进行上下移动，左右旋转和向前射击    
 
 ---
 
-## 2. ACCLIB库介绍
-因为C语言本身是没有图形界面的库，然而初学者又希望能做出带界面的东西来，但做出带界面的程序要学习windows窗体程序，对初学者来说又难，所以就有了ACLLib库(浙江大学编写)。    
+## 2. ACCLIB库介绍    
+>因为C语言本身是没有图形界面的库，然而初学者又希望能做出带界面的东西来，但做出带界面的程序要学习windows窗体程序，对初学者来说又难，所以就有了ACLLib库(浙江大学编写)。    
+>
+>ACLLib只是教学目的做的一个函数库，它对Windows的WIn32API做了简单的包装，用相对比较简单的方式可以编写出简单的图形界面程序来。由于是自己做的教学目的的库，今后的实际工作中不可能用到这样的库，这个库有教学和学习的价值。    
+>
+>[ACLLib现在是以GPL的方式放在github中](https://github.com/wengkai/ACLLib)[1]    
 
-ACLLib只是教学目的做的一个函数库，它对Windows的WIn32API做了简单的包装，用相对比较简单的方式可以编写出简单的图形界面程序来。由于是自己做的教学目的的库，今后的实际工作中不可能用到这样的库，这个库有教学和学习的价值。    
-
-ACLLib现在是以GPL的方式放在github中，网址是 https://github.com/wengkai/ACLLib [1] 来源：https://zouzhongliang.com/index.php/2019/03/31/acllib%e5%ba%93%e6%98%af%e4%bb%80%e4%b9%88/    
+[1] [来源：https://zouzhongliang.com/index.php/2019/03/31/acllib%e5%ba%93%e6%98%af%e4%bb%80%e4%b9%88/](https://zouzhongliang.com/index.php/2019/03/31/acllib%e5%ba%93%e6%98%af%e4%bb%80%e4%b9%88/)   
 
 ---
 
 ## 3. 系统分析    
-### 3.1 功能分析
-- 1. 游戏菜单界面    
+
+### 3.1 功能分析    
+- 1. 游戏菜单界面跳转    
 - 2. 随机生成连通图并正确显示   
 - 3. 坦克交互式移动和边界判定    
 - 4. 子弹发射,反弹,与坦克碰撞判定    
 - 5. 分数统计    
 
-### 3.2 类关系分析
-- 1. SolidObject 实体类    
-- 2. Tank public继承SolidObject    
-- 3. Bullet public继承SolidObject    
-- 4. WallMap 地图类    
+### 3.2 类关系分析    
+- 1. `SolidObject` 实体类    
+- 2. `Tank` `public`继承`SolidObject`    
+- 3. `Bullet` `public`继承`SolidObject`    
+- 4. `WallMap` 地图类    
 
-### 3.3 其中混杂的面向过程
-- 1. mapcreated 由于采取了并查集的算法(通常信竞代码都是面相过程的C++)，遂不创建一个新类   
-- 2. 游戏各个界面跳转：受限于ACCLIB，只能在timeevent中实现   
-- 3. 按键触发：   
+### 3.3 其中混杂的面向过程    
+- 1. `map_create` 由于采取了并查集的算法(通常信竞代码都是面相过程的C++)，遂不创建一个新类   
+- 2. 游戏各个界面跳转：受限于`ACCLIB`，在`time_event`中实现    
+- 3. 按键触发   
 
 ---
 
 ## 4. 详细设计及实现   
-### 4.1 场景与视窗    
-在Setup中，实现 窗口初始化 图片加载 键盘鼠标中断使能 定时器使能
 
-### 4.2 窗口跳转实现
-在timeevent中，每30ms（实际测试误差严重）跳转界面    
-通过判断 interface_state 来确定该进入哪一个界面    
+### 4.1 场景与视窗    
+在`Setup`中，实现 窗口初始化 图片加载 键盘鼠标中断使能 定时器使能    
+
+### 4.2 窗口跳转实现    
+在`time_event`中，每30ms（实际测试误差严重）跳转界面    
+通过判断 `interface_state` 来确定该进入哪一个界面    
 其中宏定义了如下界面    
+
 ```c++
     #define INTERFACE_GAME_INIT	        0
     #define INTERFACE_GAME_PLAY	        1
-    #define INTERFACE_MENU_BEGIN	    2
+    #define INTERFACE_MENU_BEGIN        2
     #define INTERFACE_MENU_PAUSE        3
     #define INTERFACE_MENU_INTRODUCTION 4
     #define INTERFACE_MENU_DEVELPOER    5
@@ -71,29 +79,29 @@ ACLLib现在是以GPL的方式放在github中，网址是 https://github.com/wen
 
 #### 4.2.2 界面关系解析    
 
+- 自己看代码去吧    
 
-
-
-### 4.3 SolidObject类实现    
+### 4.3 `SolidObject`类实现    
 
 #### 4.3.1成员变量：    
 
 ```c++
-	int _user;				//玩家（编号）
-	ACL_Color _color;		//颜色
-	int _center[2];			//以画布左上角为原点，SolidObject的中心坐标
-	int _angle;				//水平向右为正,顺时针自加
-	int _half_length;		//长度的1/2
-	int _half_width;		//宽度的1/2
-	int _linear_v;			//线速度
-	int _angular_v;			//角速度
+	int _user;          //玩家（编号）
+	ACL_Color _color;	  //颜色
+	int _center[2];	    //以画布左上角为原点，SolidObject的中心坐标
+	int _angle;	        //水平向右为正,顺时针自加
+	int _half_length;	  //长度的1/2
+	int _half_width;	  //宽度的1/2
+	int _linear_v;      //线速度
+	int _angular_v;     //角速度
 ```
 
-其中采用 _half_length _half_width 方便可以通过对称快速求出物体的四角坐标
+其中采用 `_half_length` `_half_width` 可以方便通过对称快速求出物体的四角坐标    
 
-#### 4.3.2成员函数：
+#### 4.3.2成员函数：  
 
-##### 4.3.2.1 protected
+##### 4.3.2.1 `protected`    
+
 ```c++
 /**
   * @brief  将center2赋值给center1
@@ -132,7 +140,8 @@ POINT SolidObject::_point_coordinates(int* center, int angle);
 void SolidObject::_points_symmetric(POINT* points, int* center, int angle);
 ```
 
-##### 4.3.2.1 public
+##### 4.3.2.1 `public`    
+
 ```c++
 int SolidObject::get_angle()
 
@@ -144,17 +153,17 @@ int SolidObject::get_angle()
 void SolidObject::get_points(POINT* points)
 ```
 
-补充说明：设计之初还存在SolidObject的绘制函数，由于Tank和Bullet的绘制方法完全不同，遂未在此对象中实现
+补充说明：设计之初还存在`SolidObject`的绘制函数，由于`Tank`和`Bullet`的绘制方法完全不同，遂未在此对象中实现    
 
-### 4.4 Tank类实现（public SolidObject）  
+### 4.4 `Tank`类实现（`public SolidObject`）  
 
 #### 4.4.1成员变量： 
 
-None    
+-  `None`    
 
-#### 4.4.2成员函数：
+#### 4.4.2成员函数：  
 
-##### 4.4.2.1 private
+##### 4.4.2.1 `private`    
 
 ```c++
 /**
@@ -181,10 +190,9 @@ int Tank::_judge_move_crash(int* next_center);
 int Tank::_judge_rotate_crash(int next_angle);
 ```
 
-其中_judge_move_crash _judge_rotate_crash函数会顺便改变_center和_angle    
-为组员所写（暂时没有时间改），bug颇多
+其中`_judge_move_crash` `_judge_rotate_crash` 仍然存在少量bug    
 
-##### 4.4.2.2 public
+##### 4.4.2.2 `public`    
 
 ```c++
 /**
@@ -256,20 +264,20 @@ static void Tank::show_score()；
 static void Tank::clear_score()；
 ```
 
-懒得解释
+- 懒得解释    
 
-### 4.4 Bullet类实现（public SolidObject）  
+### 4.5 `Bullet`类实现（`public SolidObject`）   
 
-#### 4.4.1成员变量： 
+#### 4.5.1成员变量：   
 
 ```c++
 	int _is_use;	//1,using ,0 unused 
 	int _survive_time;  //子弹存活时间
 ```
 
-#### 4.4.2成员函数：
+#### 4.5.2成员函数：   
 
-##### 4.4.2.1 private
+##### 4.5.2.1 `private`    
 
 ```c++
 /**
@@ -280,20 +288,19 @@ static void Tank::clear_score()；
 void Bullet::_bullet_unshow()
 
 /**
-  * @brief  判断当前位置子弹有无撞墙
-  * @param  *center：预设预设子弹的x，y位置
-  * @retval 1：UP	2：DOWN	3：LEFT	4：RIGHT
-  				-1：TANK1（USER1）	-2：TANK2（USER2）
-				0：None
-  */
-
-/**
   * @brief  判断某一状态tank是否碰撞
   * @param  points：改状态的四个角的坐标
   * @retval 1：crash  2：uncrash
   */
 int Tank::_judge_state(POINT* points)；
 
+/**
+  * @brief  判断当前位置子弹有无撞墙
+  * @param  *center：预设预设子弹的x，y位置
+  * @retval 1：UP	2：DOWN	3：LEFT	4：RIGHT
+  				-1：TANK1（USER1）	-2：TANK2（USER2）
+				0：None
+  */
 int Bullet::_bullet_state_judge(int* center)；
 
 /**
@@ -327,9 +334,9 @@ void Bullet::_bullet_move(int judge, int* pre_center, int* next_center)
 void Bullet::_first_shoot_anti_bug()
 ```
 
-懒得解释
+- 懒得解释    
 
-##### 4.4.2.1 public
+##### 4.5.2.2 `public`    
 
 ```c++
 /**
@@ -369,11 +376,11 @@ int Bullet::pre_time()
 void Bullet::bullet_show()
 ```
 
-懒得解释
+- 懒得解释    
 
-### 4.4 WallMap类实现
+### 4.6 `WallMap`类实现    
 
-#### 4.4.1成员变量： 
+#### 4.6.1 成员变量：  
 
 ```c++
 	int _axis_x;
@@ -383,9 +390,9 @@ void Bullet::bullet_show()
 	int*** wallmap;
 ```
 
-#### 4.4.2成员函数：
+#### 4.6.2 成员函数：  
 
-##### 4.4.2.1 private
+##### 4.6.2.1 `private`    
 
 ```c++
 /**
@@ -404,9 +411,9 @@ void WallMap::_wallmap_showoneblock(int line, int column)；
 void WallMap::_wallmap_showframe()；
 ```
 
-懒得解释
+懒得解释    
 
-##### 4.4.2.1 public
+##### 4.6.2.2 `public`
 
 ```c++
 int WallMap::get_axis_x()；
@@ -432,13 +439,13 @@ void WallMap::wallmap_show()；
 void WallMap::windows_clear()；
 ```
 
-懒得解释
+- 懒得解释    
 
-### 4.3 map_create 随机生成地图
+### 4.7 `map_create` 随机生成地图    
 
-不想复制了，用了一点并查集
+不想复制了，就用了一点并查集    
 
-会用这两个函数就好
+会用这两个函数就好    
 
 ```c++
 /**
@@ -457,25 +464,28 @@ void map_free(int*** newmap, int length, int width);
 int*** map_creating(int* length, int* width);
 ```
 
-如果闲来无事想要自己去生成地图的话，可以用开发之初的手动生成函数
-void map_read(int length, int width)；
-用了个全局变量，但是现在已经被删干净了    
+如果闲来无事想要自己去生成地图的话，可以用开发之初的手动生成函数    
+`void map_read(int length, int width)；`    
+但是用了个全局变量，现在已经被删干净了    
 
-### 4.3 key_interrupt   
+### 4.8 `key_interrupt`   
 
-处理按键和鼠标事件，通过置各个key的标志位，具体做什么在time_event中处理    
+处理按键和鼠标事件，通过置各个key的标志位，具体做什么在`time_event`中处理    
 实际的if语句还要根据菜单在哪个界面进行下一步的判断    
 
-### 4.3 global_param
+### 4.9 `global_param`    
 
-一些main.cpp需要与其他文件共享的全局变量
+一些`main.cpp`需要与其他文件共享的全局变量    
 
 ---
 
-## 5. 测试
-markdown里面添加图片有点烦，另外bug还有点多。。。
+## 5. 测试    
+markdown里面添加图片有点烦，另外程序bug还有点多。。。    
 
-## 6. GitHub开源许可证
+---
+
+## 6. GitHub    
+
 ```c++
 GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
@@ -485,16 +495,25 @@ GNU GENERAL PUBLIC LICENSE
  of this license document, but changing it is not allowed.
 ```
 
-关于分支：几乎所有活都是在rotate上干的，最后才合并到master上
+关于分支：几乎所有活都是在`rotate`上干的，最后才合并到`master`上    
+对于git的不熟练掌握和项目就是一个人线性开发，几乎没有其他分支    
+
+---
 
 ## 6. 几个不足
-- 0. git使用超不熟练
-- 1. 对于各个类的实现仍然不是很完整。
-- 2. 由于浮点数（cos，sin的不精确性）的限制，暂时没有更好的方法规避，导致边界判断理论正确但实际bug百出
-- 3. ACCLIB的功能太蒟蒻了
-- 4. 想要实现的功能太复杂，浪费时间
+- 1. git使用超不熟练    
+- 2. 对于各个类的实现仍然不是很完整     
+- 3. 由于浮点数（cos，sin的不精确性）的限制，暂时没有更好的方法规避，导致边界判断理论正确但实际bug百出    
+- 4. `ACCLIB`的功能太蒟蒻了    
+- 5. 想要实现的功能太复杂，浪费时间    
+- 6. 文档编写能力    
 
-## 7. 以下内容来自网络
+---
 
+## 7. 以下内容来自网络    
 
-大一入学时我是一个对计算机一无所知的小白，装了几十个 G 的 Visual Studio 天天和 OJ 你死我活。凭着高中的数学底子我数学课学得还不错，但在专业课上对竞赛大佬只有仰望。提到编程我只会打开那笨重的 IDE，新建一个我也不知道具体是干啥的命令行项目，然后就是 cin, cout, for 循环，然后 CE, RE, WA 循环。当时的我就处在一种拼命想学好但不知道怎么学，课上认真听讲但题还不会做，课后做作业完全是用时间和它硬耗的痛苦状态。我至今电脑里还存着自己大一上学期计算概论大作业的源代码 —— 一个 1200 行的 C++ 文件，没有头文件、没有类、没有封装、没有 unit test、没有 Makefile、没有 Git，唯一的优点是它确实能跑，缺点是“能跑”的补集。我一度怀疑我是不是不适合学计算机，因为童年对于极客的所有想象，已经被我第一个学期的体验彻底粉碎了
+> *大一入学时我是一个对计算机一无所知的小白，装了几十个 G 的 Visual Studio 天天和 OJ 你死我活。凭着高中的数学底子我数学课学得还不错，但在专业课上对竞赛大佬只有仰望。提到编程我只会打开那笨重的 IDE，新建一个我也不知道具体是干啥的命令行项目，然后就是 cin, cout, for 循环，然后 CE, RE, WA 循环。当时的我就处在一种拼命想学好但不知道怎么学，课上认真听讲但题还不会做，课后做作业完全是用时间和它硬耗的痛苦状态。我至今电脑里还存着自己大一上学期计算概论大作业的源代码 —— 一个 1200 行的 C++ 文件，没有头文件、没有类、没有封装、没有 unit test、没有 Makefile、没有 Git，唯一的优点是它确实能跑，缺点是“能跑”的补集。我一度怀疑我是不是不适合学计算机，因为童年对于极客的所有想象，已经被我第一个学期的体验彻底粉碎了*    
+
+---
+
+*Tank Turrbuance Copyleft(C) 2023 NEAOZ in UESTC*
